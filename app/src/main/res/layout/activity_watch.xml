@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:keepScreenOn="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    tools:context=".WatchActivity">
+
+
+    <ImageButton
+        android:id="@+id/imgbtn_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_back"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="32dp"
+        android:background="@android:color/transparent"/>
+
+
+    <com.aseem.versatileprogressbar.ProgBar
+        android:visibility="visible"
+        android:id="@+id/progress_circular"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginVertical="100dp"
+        android:layout_marginHorizontal="80dp"
+        android:layout_gravity="center"
+        android:elevation="10dp"
+        app:barType="@drawable/popcorn_running"
+        app:text="Loading... 0%"
+        app:textSize="6sp"
+        app:enlarge="3"
+        app:androidtextColor="@color/colorSecondaryText"/>
+
+    <com.google.android.exoplayer2.ui.PlayerView
+        app:scrubber_color="@color/colorAccentYellow"
+        app:buffered_color="@color/colorAccentYellow"
+        android:background="#000"
+        android:visibility="gone"
+        android:id="@+id/exoplayer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+
+</FrameLayout>

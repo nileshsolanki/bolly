@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true"
+    android:background="#fff"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:elevation="9dp"
+        android:orientation="vertical"
+        android:background="@drawable/rounded_bottom_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="56dp"
+        android:paddingTop="32dp"
+        android:paddingStart="24dp">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Movies"
+            android:textSize="24dp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryText"/>
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_view"
+            android:clickable="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/rounded_corners_bg"
+            app:queryHint="Search movies" />
+
+
+        <FrameLayout
+            android:id="@+id/fl_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+
+    </LinearLayout>
+
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:paddingTop="16dp"
+        android:elevation="0dp"
+        android:layout_gravity="bottom"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        app:itemIconTint="#fff"
+        app:itemTextColor="#fff"
+        app:menu="@menu/navigation_menu"/>
+
+
+</FrameLayout>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:clickable="true"
+    android:focusable="true"
+    android:background="@drawable/rounded_corners_bg"
+    android:foreground="?attr/selectableItemBackground"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="120dp"
+    android:layout_height="80dp"
+    android:layout_marginEnd="16dp">
+
+
+    <ImageView
+        android:id="@+id/iv_genre"
+        android:foreground="@drawable/genre_foreground"
+        android:elevation="-1dp"
+        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/action"/>
+
+    <TextView
+        android:id="@+id/tv_genre"
+        android:elevation="1dp"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ACTION"
+        android:textColor="#ffffff"/>
+
+
+
+</FrameLayout>

@@ -15,9 +15,13 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.aseem.versatileprogressbar.ProgBar;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.frostwire.jlibtorrent.TorrentInfo;
 import com.github.se_bastiaan.torrentstream.StreamStatus;
 import com.github.se_bastiaan.torrentstream.Torrent;
@@ -25,7 +29,6 @@ import com.github.se_bastiaan.torrentstream.TorrentOptions;
 import com.github.se_bastiaan.torrentstreamserver.TorrentServerListener;
 import com.github.se_bastiaan.torrentstreamserver.TorrentStreamNotInitializedException;
 import com.github.se_bastiaan.torrentstreamserver.TorrentStreamServer;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -38,24 +41,24 @@ import com.google.android.material.snackbar.Snackbar;
 import com.nilesh.bolly.models.Movie;
 import com.nilesh.bolly.networking.RetrofitSingleton;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Response;
 
 import static android.view.View.GONE;
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_SEEK;
 import static com.nilesh.bolly.util.Common.fullScreen;
 
 public class WatchActivity extends AppCompatActivity implements TorrentServerListener {
 
     PlayerView exoplayerView;
-    ProgBar progressBar;
+    ImageView ivLoading;
     TorrentStreamServer torrentStreamServer;
+    TextView tvProgress;
     private String TORRENT = "torrent";
     SimpleExoPlayer player = null;
     private static int currentProgress = 0;
@@ -108,9 +111,14 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
 
         fullScreen(this);
 
+        tvProgress = findViewById(R.id.tv_progress);
         btnBack = findViewById(R.id.imgbtn_back);
         exoplayerView = findViewById(R.id.exoplayer);
-        progressBar = findViewById(R.id.progress_circular);
+        ivLoading = findViewById(R.id.iv_loading);
+        Glide.with(WatchActivity.this).asGif()
+                .load(R.drawable.popcorn_running)
+                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
+                .into(ivLoading).clearOnDetach();
         String id = getIntent().getStringExtra("id");
         if(id != null){
 
@@ -125,7 +133,7 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
             }
 
             TorrentOptions torrentOptions = new TorrentOptions.Builder()
-                    .saveLocation(getExternalFilesDir(Environment.DIRECTORY_MOVIES))
+                    .saveLocation(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS))
                     .removeFilesAfterStop(true)
                     .build();
 
@@ -163,7 +171,6 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
                     return;
                 }
 
-                progressBar.setVisibility(View.VISIBLE);
                 Log.d(TORRENT, response.body().getSelectedTorrent().getTitle());
                 String magnet = response.body().getSelectedTorrent().getMagnet();
                 try {
@@ -286,7 +293,7 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
     public void onServerReady(String url) {
 
         Log.d(TORRENT, "onServerReady: " + url);
-        progressBar.setVisibility(GONE);
+        ivLoading.setVisibility(GONE);
         //todo play video is disabled for now; mx player required
 //        playVideo(Uri.parse(url));
 
@@ -327,7 +334,7 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
                             }
                         }
                     })
-                    .setActionTextColor(getColor(R.color.colorAccentYellow)).show();
+                    .setActionTextColor(getResources().getColor(R.color.colorAccentYellow)).show();
         }
 
 
@@ -360,7 +367,8 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
     @Override
     public void onStreamProgress(Torrent torrent, StreamStatus status) {
         if(status.bufferProgress <= 100 && currentProgress < status.bufferProgress && currentProgress != status.bufferProgress) {
-            progressBar.setTextMsg("Loading... "+ status.bufferProgress + "%");
+            tvProgress.setText("Baking... "+ status.bufferProgress + "%");
+
         }
     }
 

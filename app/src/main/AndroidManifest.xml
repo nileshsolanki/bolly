@@ -14,18 +14,32 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".MovieGridActivity"></activity>
+
+        <activity android:name=".MovieGridActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" ></activity>
         <activity
             android:name=".WatchActivity"
             android:configChanges="orientation|screenSize|layoutDirection" />
-        <activity android:name=".MovieDetailActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MovieDetailActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:permission="android.permission.ACCESS_WIFI_STATE"
+            android:name="util.ConnectivityChangeReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name = "android.net.wifi.WIFI_STATE_CHANGED" />
+
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

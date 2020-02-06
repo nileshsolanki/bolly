@@ -20,20 +20,23 @@
         android:background="@android:color/transparent"/>
 
 
-    <com.aseem.versatileprogressbar.ProgBar
+    <ImageView
         android:visibility="visible"
-        android:id="@+id/progress_circular"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/iv_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginVertical="100dp"
         android:layout_marginHorizontal="80dp"
         android:layout_gravity="center"
-        android:elevation="10dp"
-        app:barType="@drawable/popcorn_running"
-        app:text="Loading... 0%"
-        app:textSize="6sp"
-        app:enlarge="3"
-        app:androidtextColor="@color/colorSecondaryText"/>
+        android:src="@drawable/popcorn_running" />
+
+    <TextView
+        android:id="@+id/tv_progress"
+        android:layout_marginTop="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Baking... 0%"/>
 
     <com.google.android.exoplayer2.ui.PlayerView
         app:scrubber_color="@color/colorAccentYellow"

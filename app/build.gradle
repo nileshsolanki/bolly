@@ -5,7 +5,7 @@ android {
     buildToolsVersion "29.0.1"
     defaultConfig {
         applicationId "com.nilesh.bolly"
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -37,9 +37,9 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.7.1'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation "com.github.TorrentStream:TorrentStreamServer-Android:1.0.5"
-    implementation 'com.aseem.versatileprogressbar:MultiProgressBar:1.1.0'
+//    implementation 'com.aseem.versatileprogressbar:MultiProgressBar:1.1.0'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+//    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'com.google.android.exoplayer:exoplayer:2.11.1'
 
 }

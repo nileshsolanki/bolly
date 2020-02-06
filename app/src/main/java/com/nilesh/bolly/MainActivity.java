@@ -1,15 +1,20 @@
 package com.nilesh.bolly;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -18,10 +23,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.nilesh.bolly.adapter.MovieConciseAdapter;
 import com.nilesh.bolly.adapter.MovieYearAdapter;
+import com.nilesh.bolly.fragments.BookmarkFragment;
 import com.nilesh.bolly.fragments.HomeDefaultFragment;
+import com.nilesh.bolly.fragments.HomeFragment;
 import com.nilesh.bolly.fragments.HomeSearchFragment;
+import com.nilesh.bolly.fragments.InfoFragment;
 import com.nilesh.bolly.models.MovieDetails;
 import com.nilesh.bolly.models.MovieNowPlaying;
 import com.nilesh.bolly.models.MovieSearch;
@@ -29,6 +38,7 @@ import com.nilesh.bolly.models.MovieTopRated;
 import com.nilesh.bolly.models.Result;
 import com.nilesh.bolly.networking.RetrofitSingleton;
 import com.nilesh.bolly.networking.TmdbService;
+import com.nilesh.bolly.util.ConnectivityChangeReceiver;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -41,13 +51,25 @@ import static com.nilesh.bolly.constants.Tmdb.APIKEY;
 import static com.nilesh.bolly.util.Common.fullScreen;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
-    private String RESPONSE = "response";
-
     FrameLayout flSwitch;
-    SearchView searchView;
-    private static final int HOME_DEFAULT_FRAGMENT = 0, HOME_SEARCH_FRAGMENT = 1;
-    private static int currentFragment = HOME_DEFAULT_FRAGMENT;
+    BottomNavigationView bottomNav;
+    private static int selectedItem = 0;
+    ConnectivityChangeReceiver connectivityReceiver;
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(connectivityReceiver);
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        connectivityReceiver = new ConnectivityChangeReceiver(getSupportFragmentManager());
+        registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,75 +77,68 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
 
-        fullScreen(this);
 
-        HomeDefaultFragment defaultFragment = new HomeDefaultFragment();
+        flSwitch = findViewById(R.id.fl_switch_main);
+        bottomNav = findViewById(R.id.bottom_nav);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fl_switch, defaultFragment, "SEARCH").commit();
-
-        searchView = findViewById(R.id.search_view);
-        flSwitch = findViewById(R.id.fl_switch);
-
-
-        searchView.setOnClickListener(this);
-        searchView.findViewById(R.id.search_close_btn).setOnClickListener(this);
-        searchView.findViewById(R.id.search_src_text).setOnClickListener(this);
+        setNavigationListener(bottomNav);
+        bottomNav.setSelectedItemId(R.id.home);
 
 
     }
 
+    private void setNavigationListener(BottomNavigationView bottomNav) {
 
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+                if(selectedItem == menuItem.getItemId())
+                    return true;
+                selectedItem  = menuItem.getItemId();
+
+                switch (menuItem.getItemId()){
+
+                    case R.id.home:
+                        getSupportFragmentManager().beginTransaction()
+                                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                .replace(R.id.fl_switch_main, HomeFragment.getHomeFragment()).commit();
+
+                        break;
+
+                    case R.id.bookmarks:
+                        getSupportFragmentManager().beginTransaction()
+                                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                .replace(R.id.fl_switch_main, BookmarkFragment.getBookmarkFragment()).commit();
+                        break;
+
+
+                    case R.id.info:
+                        getSupportFragmentManager().beginTransaction()
+                                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                .replace(R.id.fl_switch_main, InfoFragment.getInfoFragment()).commit();
+                        break;
+
+                    default:
+                        getSupportFragmentManager().beginTransaction()
+                                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                .replace(R.id.fl_switch_main, HomeFragment.getHomeFragment()).commit();
+                        break;
+
+                }
+
+                return true;
+            }
+        });
     }
+
+
 
 
 
     @Override
     public void onClick(View view) {
 
-
-        switch (view.getId()){
-
-            case R.id.search_view:
-                if(currentFragment != HOME_SEARCH_FRAGMENT){
-                    HomeSearchFragment searchFragment = new HomeSearchFragment();
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fl_switch, searchFragment, "SEARCH").commit();
-                    currentFragment = HOME_SEARCH_FRAGMENT;
-
-                    findViewById(R.id.search_button).performClick();
-                }
-                break;
-
-            case R.id.search_src_text:
-                if(currentFragment != HOME_SEARCH_FRAGMENT){
-                    HomeSearchFragment searchFragment = new HomeSearchFragment();
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fl_switch, searchFragment, "SEARCH").commit();
-                    currentFragment = HOME_SEARCH_FRAGMENT;
-                }
-                break;
-
-
-            case R.id.search_close_btn:
-                if(currentFragment != HOME_DEFAULT_FRAGMENT){
-                    HomeDefaultFragment defaultFragment = new HomeDefaultFragment();
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fl_switch, defaultFragment, "DEFAULT").commit();
-                    currentFragment = HOME_DEFAULT_FRAGMENT;
-
-                    hideKeyboard(this);
-                }
-
-                ((EditText) findViewById(R.id.search_src_text)).setText("");
-                break;
-
-        }
 
     }
 }

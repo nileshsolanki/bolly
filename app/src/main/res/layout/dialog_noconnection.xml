@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:clickable="true"
+    android:background="#fff"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="24dp"
+        android:src="@drawable/ic_back"
+        android:background="#fff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:elevation="1dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:textSize="12dp"
+        android:layout_marginBottom="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="image by - www.icons8.com"/>
+
+    <TextView
+        android:elevation="1dp"
+        android:textSize="20dp"
+        android:textColor="@color/colorPrimaryText"
+        android:layout_marginBottom="32dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:text="You Are Disconnected :("
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:elevation="0dp"
+        android:src="@drawable/noconnection"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</FrameLayout>

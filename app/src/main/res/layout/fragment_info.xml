@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#fff"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+
+    <LinearLayout
+        android:weightSum="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_marginTop="90dp"
+            android:elevation="16dp"
+            android:layout_gravity="center_horizontal"
+            app:cardCornerRadius="40dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@mipmap/ic_launcher_round"/>
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+
+        <TextView
+            android:layout_marginTop="12dp"
+            android:textStyle="bold"
+            android:letterSpacing="0.3"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bolly"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="20dp"/>
+
+
+        <TextView
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="v1.0"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="12dp"/>
+
+
+
+        <ImageButton
+            android:foregroundGravity="top"
+            android:layout_weight="1"
+            android:layout_marginTop="84dp"
+            android:layout_gravity="center_horizontal"
+            android:backgroundTint="#fff"
+            android:layout_marginHorizontal="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_share" />
+
+
+        <TextView
+            android:clickable="true"
+
+            android:gravity="bottom"
+            android:paddingBottom="24dp"
+            android:textStyle="bold"
+            android:letterSpacing="0.3"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="open source attributions"/>
+
+
+
+
+    </LinearLayout>
+
+
+
+</ScrollView>

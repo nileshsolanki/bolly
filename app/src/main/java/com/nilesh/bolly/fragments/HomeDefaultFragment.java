@@ -28,6 +28,8 @@ import com.nilesh.bolly.networking.TmdbService;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,29 +47,9 @@ public class HomeDefaultFragment extends Fragment implements View.OnClickListene
     private String RESPONSE = "Response";
 
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_home_default, container, false);
-
-        tvShowingMore = view.findViewById(R.id.tv_more_showing);
-        tvRatedMore = view.findViewById(R.id.tv_more_rated);
-        rvMovieNowpalying = view.findViewById(R.id.rv_movie_concise_nowplaying);
-        rvMovieToprated = view.findViewById(R.id.rv_movie_concise_popular);
-        rvMovieConciseYear = view.findViewById(R.id.rv_movie_concise_year);
-        rvMovieConciseGenre = view.findViewById(R.id.rv_movie_concise_genre);
-        rvMovieNowpalying.setHasFixedSize(true);
-        rvMovieToprated.setHasFixedSize(true);
-        rvMovieConciseYear.setAdapter(new MovieYearAdapter(getContext()));
-
-        movieGenreAdapter = new MovieGenreAdapter(getContext());
-        rvMovieConciseGenre.setHasFixedSize(true);
-        rvMovieConciseGenre.setAdapter(movieGenreAdapter);
-
-        tvShowingMore.setOnClickListener(this);
-        tvRatedMore.setOnClickListener(this);
-
-
+    public void onStart() {
+        super.onStart();
 
         TmdbService service = RetrofitSingleton.getTmdbService();
         service.nowPlaying(APIKEY, "hi", "IN", 1).enqueue(new Callback<MovieNowPlaying>() {
@@ -76,8 +58,6 @@ public class HomeDefaultFragment extends Fragment implements View.OnClickListene
 
                 movieNowplayingAdapter = new MovieConciseAdapter(response.body().getResults(), getActivity());
                 rvMovieNowpalying.setAdapter(movieNowplayingAdapter);
-
-
 
             }
 
@@ -91,11 +71,15 @@ public class HomeDefaultFragment extends Fragment implements View.OnClickListene
         service.topRated(APIKEY, "hi", "IN", 1).enqueue(new Callback<MovieTopRated>() {
             @Override
             public void onResponse(Call<MovieTopRated> call, Response<MovieTopRated> response) {
+                List<Result> movies = new ArrayList<>();
+
                 for(Result result : response.body().getResults()){
-//                    Log.d(RESPONSE, result.getTitle());
+                    if(Integer.parseInt(result.getReleaseDate().split("-")[0])>= 2000)
+                        movies.add(result);
+
                 }
 
-                movieTopratedAdapter = new MovieConciseAdapter(response.body().getResults(), getActivity());
+                movieTopratedAdapter = new MovieConciseAdapter(movies, getActivity());
                 rvMovieToprated.setAdapter(movieTopratedAdapter);
             }
 
@@ -128,6 +112,32 @@ public class HomeDefaultFragment extends Fragment implements View.OnClickListene
 
             }
         });
+
+
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_home_default, container, false);
+
+        tvShowingMore = view.findViewById(R.id.tv_more_showing);
+        tvRatedMore = view.findViewById(R.id.tv_more_rated);
+        rvMovieNowpalying = view.findViewById(R.id.rv_movie_concise_nowplaying);
+        rvMovieToprated = view.findViewById(R.id.rv_movie_concise_popular);
+        rvMovieConciseYear = view.findViewById(R.id.rv_movie_concise_year);
+        rvMovieConciseGenre = view.findViewById(R.id.rv_movie_concise_genre);
+        rvMovieNowpalying.setHasFixedSize(true);
+        rvMovieToprated.setHasFixedSize(true);
+        rvMovieConciseYear.setAdapter(new MovieYearAdapter(getContext()));
+
+        movieGenreAdapter = new MovieGenreAdapter(getContext());
+        rvMovieConciseGenre.setHasFixedSize(true);
+        rvMovieConciseGenre.setAdapter(movieGenreAdapter);
+
+        tvShowingMore.setOnClickListener(this);
+        tvRatedMore.setOnClickListener(this);
+
 
 
         return view;

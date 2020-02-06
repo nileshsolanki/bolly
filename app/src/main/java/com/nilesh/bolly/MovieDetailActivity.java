@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +23,7 @@ import com.nilesh.bolly.adapter.MovieGenreAdapter;
 import com.nilesh.bolly.models.MovieDetails;
 import com.nilesh.bolly.models.Result;
 import com.nilesh.bolly.networking.RetrofitSingleton;
+import com.nilesh.bolly.util.ConnectivityChangeReceiver;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -48,7 +51,25 @@ public class MovieDetailActivity extends AppCompatActivity{
     private String RESPONSE = "response";
     MovieDetails details;
     ImageButton btnBack;
+    ConnectivityChangeReceiver connectivityReceiver;
     final String [] months = new String[] { "", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(connectivityReceiver);
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        connectivityReceiver = new ConnectivityChangeReceiver(getSupportFragmentManager());
+        registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

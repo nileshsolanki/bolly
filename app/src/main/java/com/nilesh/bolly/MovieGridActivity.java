@@ -5,6 +5,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -14,11 +16,13 @@ import android.widget.TextView;
 
 import com.nilesh.bolly.adapter.GridSpacingItemDecoration;
 import com.nilesh.bolly.adapter.MovieConciseAdapter;
+import com.nilesh.bolly.models.Movie;
 import com.nilesh.bolly.models.MovieDiscover;
 import com.nilesh.bolly.models.MovieNowPlaying;
 import com.nilesh.bolly.models.MovieTopRated;
 import com.nilesh.bolly.models.Result;
 import com.nilesh.bolly.networking.RetrofitSingleton;
+import com.nilesh.bolly.util.ConnectivityChangeReceiver;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -47,6 +51,22 @@ public class MovieGridActivity extends AppCompatActivity {
     int category;
     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     ImageButton btnBack;
+    ConnectivityChangeReceiver connectivityReceiver;
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(connectivityReceiver);
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        connectivityReceiver = new ConnectivityChangeReceiver(getSupportFragmentManager());
+        registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +135,11 @@ public class MovieGridActivity extends AppCompatActivity {
                             @Override
                             public void onResponse(Call<MovieTopRated> call, Response<MovieTopRated> response) {
                                 if(response.body().getResults() != null){
-                                    movies.addAll(response.body().getResults());
+
+                                    for(Result result: response.body().getResults()){
+                                        if(Integer.parseInt(result.getReleaseDate().split("-")[0] ) >= 2000)
+                                            movies.add(result);
+                                    }
                                     adapter.notifyDataSetChanged();
 
                                     Log.d("PageTotal", response.body().getTotalPages() + "");

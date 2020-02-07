@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:animateLayoutChanges="true"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#fff"
+    android:clickable="true"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="24dp"
+        android:src="@drawable/ic_back"/>
+
+    <TextView
+        android:textColor="@color/colorPrimaryText"
+        android:layout_marginTop="24dp"
+        android:textSize="24dp"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:layout_height="wrap_content"
+        android:text="New Update Available"/>
+
+    <TextView
+        android:id="@+id/tv_version_name"
+        android:layout_marginTop="4dp"
+        android:textSize="16dp"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:layout_height="wrap_content"
+        android:text="version: 1.0.0"/>
+
+
+
+
+
+    <ImageView
+        android:id="@+id/iv_loading"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1"
+        android:layout_marginTop="56dp"
+        android:maxWidth="100dp"
+        android:maxHeight="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:textColor="@color/colorPrimaryText"
+        android:visibility="gone"
+        android:id="@+id/tv_progress"
+        android:layout_gravity="center_horizontal"
+        android:textSize="18dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Downloading... 0%"/>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_download_update"
+        android:padding="12dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginBottom="98dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="download"/>
+
+</LinearLayout>

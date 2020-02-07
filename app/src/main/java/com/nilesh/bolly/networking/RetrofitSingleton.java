@@ -5,11 +5,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.nilesh.bolly.constants.Tmdb.SERVER_BASE_URL;
 import static com.nilesh.bolly.constants.Tmdb.TMDB_BASE_URL;
+import static com.nilesh.bolly.constants.Tmdb.UPDATE_SERVICE_BASE_URL;
 
 public class RetrofitSingleton {
 
     private static TmdbService tmdbService = null;
     private static BollyService bollyService = null;
+    private static UpdateService updateService = null;
 
     public static TmdbService getTmdbService(){
         if(tmdbService == null){
@@ -36,6 +38,20 @@ public class RetrofitSingleton {
         }
 
         return bollyService;
+    }
+
+
+    public static UpdateService getUpdateService(){
+        if(updateService == null){
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(UPDATE_SERVICE_BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            updateService = retrofit.create(UpdateService.class);
+        }
+
+        return updateService;
     }
 
 

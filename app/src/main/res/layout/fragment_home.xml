@@ -14,7 +14,7 @@ xmlns:tools="http://schemas.android.com/tools"
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Movies"
+        android:text="Bolly"
         android:textSize="24dp"
         android:textStyle="bold"
         android:textColor="@color/colorPrimaryText"/>

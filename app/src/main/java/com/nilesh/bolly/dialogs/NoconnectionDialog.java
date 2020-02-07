@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.nilesh.bolly.R;
 
@@ -22,6 +23,7 @@ public class NoconnectionDialog extends DialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View v =  inflater.inflate(R.layout.dialog_noconnection, container, false);
+        setCancelable(false);
 
         ImageButton btnBak = v.findViewById(R.id.btn_back);
         btnBak.setOnClickListener(new View.OnClickListener() {

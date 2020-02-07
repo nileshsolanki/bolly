@@ -1,6 +1,7 @@
 package com.nilesh.bolly;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
@@ -13,6 +14,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,11 +33,13 @@ import com.nilesh.bolly.fragments.HomeDefaultFragment;
 import com.nilesh.bolly.fragments.HomeFragment;
 import com.nilesh.bolly.fragments.HomeSearchFragment;
 import com.nilesh.bolly.fragments.InfoFragment;
+import com.nilesh.bolly.fragments.UpdateFragment;
 import com.nilesh.bolly.models.MovieDetails;
 import com.nilesh.bolly.models.MovieNowPlaying;
 import com.nilesh.bolly.models.MovieSearch;
 import com.nilesh.bolly.models.MovieTopRated;
 import com.nilesh.bolly.models.Result;
+import com.nilesh.bolly.models.UpdateLog;
 import com.nilesh.bolly.networking.RetrofitSingleton;
 import com.nilesh.bolly.networking.TmdbService;
 import com.nilesh.bolly.util.ConnectivityChangeReceiver;
@@ -50,12 +54,11 @@ import retrofit2.Response;
 import static com.nilesh.bolly.constants.Tmdb.APIKEY;
 import static com.nilesh.bolly.util.Common.fullScreen;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
     FrameLayout flSwitch;
     BottomNavigationView bottomNav;
     private static int selectedItem = 0;
     ConnectivityChangeReceiver connectivityReceiver;
-
 
     @Override
     protected void onPause() {
@@ -71,11 +74,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
 
         flSwitch = findViewById(R.id.fl_switch_main);
@@ -83,6 +87,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         setNavigationListener(bottomNav);
         bottomNav.setSelectedItemId(R.id.home);
+
+        checkUpdate();
+
+    }
+
+    private void checkUpdate() {
+
+        RetrofitSingleton.getUpdateService().checkUpdates().enqueue(new Callback<UpdateLog>() {
+            @Override
+            public void onResponse(Call<UpdateLog> call, Response<UpdateLog> response) {
+                if(response.body().getLatestVersion() != null){
+
+                    if(BuildConfig.VERSION_CODE < response.body().getLatestVersionCode() ){
+
+                        Bundle args = new Bundle();
+                        args.putString("downloadUrl", response.body().getUrl());
+                        args.putString("version", response.body().getLatestVersion());
+
+                        UpdateFragment updateFragment = new UpdateFragment();
+                        updateFragment.setArguments(args);
+
+                        getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                .add(android.R.id.content, updateFragment, "update")
+                                .addToBackStack("stack")
+                                .commit();
+
+                    }
+
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UpdateLog> call, Throwable t) {
+
+            }
+        });
 
 
     }
@@ -99,13 +140,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 switch (menuItem.getItemId()){
 
-                    case R.id.home:
-                        getSupportFragmentManager().beginTransaction()
-                                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                                .replace(R.id.fl_switch_main, HomeFragment.getHomeFragment()).commit();
-
-                        break;
-
                     case R.id.bookmarks:
                         getSupportFragmentManager().beginTransaction()
                                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -119,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 .replace(R.id.fl_switch_main, InfoFragment.getInfoFragment()).commit();
                         break;
 
-                    default:
+                    default: //or r.id.home
                         getSupportFragmentManager().beginTransaction()
                                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                                 .replace(R.id.fl_switch_main, HomeFragment.getHomeFragment()).commit();
@@ -132,13 +166,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-
-
-
-
-    @Override
-    public void onClick(View view) {
-
-
-    }
 }

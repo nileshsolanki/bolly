@@ -2,6 +2,7 @@ package com.nilesh.bolly;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -19,6 +20,8 @@ import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.nilesh.bolly.adapter.MovieGenreAdapter;
 import com.nilesh.bolly.models.MovieDetails;
 import com.nilesh.bolly.models.Result;
@@ -47,6 +50,7 @@ public class MovieDetailActivity extends AppCompatActivity{
     LinearLayout bottmSheet;
     TextView tvRating, tvTitle, tvRuntime, tvGenre, tvLanguage, tvYear, tvDescription;
     ImageView ivPoster;
+    FloatingActionButton fabBookmark;
     MaterialButton btnWatchNow;
     private String RESPONSE = "response";
     MovieDetails details;
@@ -60,6 +64,7 @@ public class MovieDetailActivity extends AppCompatActivity{
     protected void onPause() {
         super.onPause();
         unregisterReceiver(connectivityReceiver);
+
     }
 
 
@@ -91,6 +96,7 @@ public class MovieDetailActivity extends AppCompatActivity{
         btnWatchNow = findViewById(R.id.btn_watchnow);
         bottmSheet = findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottmSheet);
+        fabBookmark = findViewById(R.id.fab_bookmark);
 
         Intent intent = getIntent();
         Result result = (Result) intent.getSerializableExtra("result");
@@ -126,6 +132,14 @@ public class MovieDetailActivity extends AppCompatActivity{
                     }
                 });
         fetchDetails(result);
+
+
+        fabBookmark.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make((CoordinatorLayout)btnBack.getParent(), "Comming Soon", Snackbar.LENGTH_SHORT).show();
+            }
+        });
 
 
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {

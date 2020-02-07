@@ -1,9 +1,5 @@
 package com.nilesh.bolly;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
@@ -14,9 +10,12 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.nilesh.bolly.adapter.GridSpacingItemDecoration;
 import com.nilesh.bolly.adapter.MovieConciseAdapter;
-import com.nilesh.bolly.models.Movie;
 import com.nilesh.bolly.models.MovieDiscover;
 import com.nilesh.bolly.models.MovieNowPlaying;
 import com.nilesh.bolly.models.MovieTopRated;
@@ -27,11 +26,8 @@ import com.nilesh.bolly.util.ConnectivityChangeReceiver;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;

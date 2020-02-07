@@ -1,9 +1,5 @@
 package com.nilesh.bolly;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
@@ -18,24 +14,20 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.nilesh.bolly.adapter.MovieGenreAdapter;
 import com.nilesh.bolly.models.MovieDetails;
 import com.nilesh.bolly.models.Result;
 import com.nilesh.bolly.networking.RetrofitSingleton;
 import com.nilesh.bolly.util.ConnectivityChangeReceiver;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-
-import java.lang.reflect.Array;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Response;

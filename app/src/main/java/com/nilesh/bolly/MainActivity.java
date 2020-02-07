@@ -1,58 +1,27 @@
 package com.nilesh.bolly;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.app.Activity;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.nilesh.bolly.adapter.MovieConciseAdapter;
-import com.nilesh.bolly.adapter.MovieYearAdapter;
 import com.nilesh.bolly.fragments.BookmarkFragment;
-import com.nilesh.bolly.fragments.HomeDefaultFragment;
 import com.nilesh.bolly.fragments.HomeFragment;
-import com.nilesh.bolly.fragments.HomeSearchFragment;
 import com.nilesh.bolly.fragments.InfoFragment;
 import com.nilesh.bolly.fragments.UpdateFragment;
-import com.nilesh.bolly.models.MovieDetails;
-import com.nilesh.bolly.models.MovieNowPlaying;
-import com.nilesh.bolly.models.MovieSearch;
-import com.nilesh.bolly.models.MovieTopRated;
-import com.nilesh.bolly.models.Result;
 import com.nilesh.bolly.models.UpdateLog;
 import com.nilesh.bolly.networking.RetrofitSingleton;
-import com.nilesh.bolly.networking.TmdbService;
 import com.nilesh.bolly.util.ConnectivityChangeReceiver;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static com.nilesh.bolly.constants.Tmdb.APIKEY;
-import static com.nilesh.bolly.util.Common.fullScreen;
 
 public class MainActivity extends AppCompatActivity {
     FrameLayout flSwitch;

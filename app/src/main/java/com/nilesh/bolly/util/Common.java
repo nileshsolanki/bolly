@@ -1,7 +1,6 @@
 package com.nilesh.bolly.util;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Build;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;

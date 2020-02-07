@@ -4,7 +4,6 @@ import com.nilesh.bolly.models.UpdateLog;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Query;
 
 public interface UpdateService {
 

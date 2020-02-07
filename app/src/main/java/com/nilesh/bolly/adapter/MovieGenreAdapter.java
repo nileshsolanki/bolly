@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.nilesh.bolly.MovieGridActivity;
 import com.nilesh.bolly.R;
-import com.nilesh.bolly.fragments.HomeDefaultFragment;
 
 public class MovieGenreAdapter extends RecyclerView.Adapter<MovieGenreAdapter.GenreViewHolder> {
     Context context;

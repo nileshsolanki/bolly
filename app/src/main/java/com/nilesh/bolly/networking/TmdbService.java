@@ -1,7 +1,5 @@
 package com.nilesh.bolly.networking;
 
-import android.net.Uri;
-
 import com.nilesh.bolly.models.MovieDetails;
 import com.nilesh.bolly.models.MovieDiscover;
 import com.nilesh.bolly.models.MovieExternalIds;
@@ -10,8 +8,6 @@ import com.nilesh.bolly.models.MovieSearch;
 import com.nilesh.bolly.models.MovieTopRated;
 
 import retrofit2.Call;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;

@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -26,8 +27,6 @@ import com.nilesh.bolly.models.MovieDetails;
 import com.nilesh.bolly.models.Result;
 import com.nilesh.bolly.networking.RetrofitSingleton;
 import com.nilesh.bolly.util.ConnectivityChangeReceiver;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -55,7 +54,8 @@ public class MovieDetailActivity extends AppCompatActivity{
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(connectivityReceiver);
+        if(connectivityReceiver != null)
+            unregisterReceiver(connectivityReceiver);
 
     }
 
@@ -63,17 +63,20 @@ public class MovieDetailActivity extends AppCompatActivity{
     @Override
     protected void onStart() {
         super.onStart();
+        fullScreen(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         connectivityReceiver = new ConnectivityChangeReceiver(getSupportFragmentManager());
         registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
-
-        fullScreen(this);
 
 
         btnBack = findViewById(R.id.imgbtn_back);
@@ -110,19 +113,7 @@ public class MovieDetailActivity extends AppCompatActivity{
             ivPoster.setTransitionName(imageTransitionName);
         }
 
-        Picasso.get().load(POSTER_DOMAIN_500 + result.getPosterPath())
-                .noFade()
-                .into(ivPoster, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        supportStartPostponedEnterTransition();
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        supportStartPostponedEnterTransition();
-                    }
-                });
+        Glide.with(this).load(POSTER_DOMAIN_500 + result.getPosterPath()).into(ivPoster);
         fetchDetails(result);
 
 

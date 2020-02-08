@@ -4,6 +4,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.nilesh.bolly.util.Common.fullScreen;
+
 public class MainActivity extends AppCompatActivity {
     FrameLayout flSwitch;
     BottomNavigationView bottomNav;
@@ -32,24 +35,28 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(connectivityReceiver);
+        if(connectivityReceiver != null)
+            unregisterReceiver(connectivityReceiver);
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
+        fullScreen(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         connectivityReceiver = new ConnectivityChangeReceiver(getSupportFragmentManager());
         registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         flSwitch = findViewById(R.id.fl_switch_main);
         bottomNav = findViewById(R.id.bottom_nav);

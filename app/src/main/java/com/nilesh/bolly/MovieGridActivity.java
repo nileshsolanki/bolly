@@ -53,13 +53,21 @@ public class MovieGridActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(connectivityReceiver);
+        if(connectivityReceiver != null)
+            unregisterReceiver(connectivityReceiver);
+
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
+        fullScreen(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         connectivityReceiver = new ConnectivityChangeReceiver(getSupportFragmentManager());
         registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }

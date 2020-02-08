@@ -13,11 +13,11 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
 import com.nilesh.bolly.MovieDetailActivity;
 import com.nilesh.bolly.R;
 import com.nilesh.bolly.models.Result;
-import com.squareup.picasso.Picasso;
 
 import java.io.Serializable;
 import java.util.List;
@@ -85,7 +85,7 @@ public class MovieConciseAdapter extends RecyclerView.Adapter<MovieConciseAdapte
     public void onBindViewHolder(@NonNull ConciseViewHolder holder, int position) {
         holder.mName.setText(movieDataset.get(position).getTitle());
         holder.mRating.setText(movieDataset.get(position).getVoteAverage() + "");
-        Picasso.get().load(POSTER_DOMAIN_185 + movieDataset.get(position).getPosterPath()).into(holder.mPoster);
+        Glide.with(activity).load(POSTER_DOMAIN_185 + movieDataset.get(position).getPosterPath()).into(holder.mPoster);
 
 
         ViewCompat.setTransitionName(holder.mPoster, movieDataset.get(position).getId() + "");

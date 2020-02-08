@@ -1,88 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="#fff"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
 
+    <ScrollView
 
-    <LinearLayout
-        android:weightSum="1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="24dp"
+            android:orientation="vertical">
 
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_marginTop="90dp"
-            android:elevation="16dp"
-            android:layout_gravity="center_horizontal"
-            app:cardCornerRadius="40dp"
-            android:layout_width="80dp"
-            android:layout_height="80dp">
+
 
             <ImageView
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="64dp"
+                android:layout_width="200dp"
+                android:layout_height="100dp"
+                android:src="@drawable/banner"/>
+
+
+
+
+            <TextView
+                android:id="@+id/tv_version_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="v1.0"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="12dp"
+                android:layout_marginBottom="56dp"/>
+
+
+            <TextView
+                android:id="@+id/tv_share"
+                android:clickable="true"
+                android:background="?attr/selectableItemBackground"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@mipmap/ic_launcher_round"/>
-
-        </com.google.android.material.card.MaterialCardView>
-
-
-
-        <TextView
-            android:layout_marginTop="12dp"
-            android:textStyle="bold"
-            android:letterSpacing="0.3"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bolly"
-            android:textColor="@color/colorPrimaryText"
-            android:textSize="20dp"/>
-
-
-        <TextView
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="v1.0"
-            android:textColor="@color/colorPrimaryText"
-            android:textSize="12dp"/>
-
-
-
-        <ImageButton
-            android:foregroundGravity="top"
-            android:layout_weight="1"
-            android:layout_marginTop="84dp"
-            android:layout_gravity="center_horizontal"
-            android:backgroundTint="#fff"
-            android:layout_marginHorizontal="24dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_share" />
-
-
-        <TextView
-            android:clickable="true"
-
-            android:gravity="bottom"
-            android:paddingBottom="24dp"
-            android:textStyle="bold"
-            android:letterSpacing="0.3"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="open source attributions"/>
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_share"
+                android:drawablePadding="24dp"
+                android:textSize="18dp"
+                android:textColor="@color/colorPrimaryText"
+                android:gravity="start"
+                app:iconPadding="24dp"
+                android:text="\nSHARE\nShare bolly with all your friends\n"
+                app:icon="@drawable/ic_share" />
 
 
 
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/tv_opensource_licenses"
+                android:clickable="true"
+                android:background="?attr/selectableItemBackground"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_open_source"
+                android:drawablePadding="24dp"
+                android:textSize="18dp"
+                android:textColor="@color/colorPrimaryText"
+                android:gravity="start"
+                app:iconPadding="24dp"
+                android:text="\nOPEN-SOURCE Licenses\n"/>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="40dp"/>
 
 
 
-</ScrollView>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="24dp"
+                android:textSize="14dp"
+                android:textColor="@color/colorPrimaryText"
+                android:gravity="start"
+                app:iconPadding="24dp"
+                android:text="@string/attributions" />
+
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="70dp"
+                android:src="@drawable/tmdb_attr"/>
+
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+
+</FrameLayout>

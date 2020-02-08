@@ -14,8 +14,20 @@
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keepattributes SourceFile,LineNumberTable
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keepclassmembers,allowobfuscation class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+  }
+-keep,allowobfuscation @interface com.google.gson.annotations.SerializedName
+
+
+-keep class com.frostwire.jlibtorrent.swig.libtorrent_jni {*;}
+-keep class com.frostwire.jlibtorrent.swig.** { *; }
+-keepclasseswithmembernames,includedescriptorclasses class com.frostwire.jlibtorrent.swig.libtorrent_jni {
+  native <methods>;
+}

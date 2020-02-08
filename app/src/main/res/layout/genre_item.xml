@@ -12,7 +12,7 @@
 
     <ImageView
         android:id="@+id/iv_genre"
-        android:foreground="@drawable/genre_foreground"
+
         android:elevation="-1dp"
         android:scaleType="centerCrop"
         android:layout_width="match_parent"
@@ -22,9 +22,10 @@
     <TextView
         android:id="@+id/tv_genre"
         android:elevation="1dp"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="@drawable/genre_foreground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:text="ACTION"
         android:textColor="#ffffff"/>
 

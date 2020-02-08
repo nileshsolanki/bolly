@@ -21,7 +21,9 @@ import androidx.core.app.ActivityCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.transition.DrawableCrossFadeTransition;
 import com.frostwire.jlibtorrent.TorrentInfo;
 import com.github.se_bastiaan.torrentstream.StreamStatus;
 import com.github.se_bastiaan.torrentstream.Torrent;
@@ -78,6 +80,12 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        fullScreen(this);
+    }
+
     //todo : perform check for pause
     @Override
     protected void onPause() {
@@ -108,16 +116,15 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
         setContentView(R.layout.activity_watch);
 
 
-        fullScreen(this);
 
         tvProgress = findViewById(R.id.tv_progress);
         btnBack = findViewById(R.id.imgbtn_back);
         exoplayerView = findViewById(R.id.exoplayer);
         ivLoading = findViewById(R.id.iv_loading);
-        Glide.with(WatchActivity.this).asGif()
+        Glide.with(WatchActivity.this)
                 .load(R.drawable.popcorn_running)
-                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
-                .into(ivLoading).clearOnDetach();
+                .transition(new DrawableTransitionOptions().crossFade())
+                .into(ivLoading);
         String id = getIntent().getStringExtra("id");
         if(id != null){
 
@@ -305,13 +312,12 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
     private void startMxPlayer(String url) {
         final String MX_AD = "com.mxtech.videoplayer.ad";
         final String MX_PRO = "com.mxtech.videoplayer.pro";
-        final String available = null;
 
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.setData(Uri.parse(url));
 
 
-        final PackageManager packageManager = this.getPackageManager();
+        final PackageManager packageManager = WatchActivity.this.getPackageManager();
         Intent pro = packageManager.getLaunchIntentForPackage(MX_PRO);
         Intent ad = packageManager.getLaunchIntentForPackage(MX_AD);
 

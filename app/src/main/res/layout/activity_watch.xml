@@ -27,8 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="100dp"
         android:layout_marginHorizontal="80dp"
-        android:layout_gravity="center"
-        android:src="@drawable/popcorn_running" />
+        android:layout_gravity="center" />
 
     <TextView
         android:id="@+id/tv_progress"

@@ -44,6 +44,8 @@ public class HomeDefaultFragment extends Fragment implements View.OnClickListene
     MovieGenreAdapter movieGenreAdapter;
     TextView tvShowingMore, tvRatedMore;
     private String RESPONSE = "Response";
+    List<Result> ratedMovies = new ArrayList<>();
+    List<Result> nowPlayingMovies = new ArrayList<>();
 
 
 
@@ -71,6 +73,14 @@ public class HomeDefaultFragment extends Fragment implements View.OnClickListene
         tvRatedMore.setOnClickListener(this);
 
 
+
+        movieTopratedAdapter = new MovieConciseAdapter(ratedMovies, getActivity());
+        rvMovieToprated.setAdapter(movieTopratedAdapter);
+
+        movieNowplayingAdapter = new MovieConciseAdapter(nowPlayingMovies, getActivity());
+        rvMovieNowpalying.setAdapter(movieNowplayingAdapter);
+
+
         createSerivces();
 
 
@@ -84,9 +94,10 @@ public class HomeDefaultFragment extends Fragment implements View.OnClickListene
         service.nowPlaying(APIKEY, "hi", "IN", 1).enqueue(new Callback<MovieNowPlaying>() {
             @Override
             public void onResponse(Call<MovieNowPlaying> call, Response<MovieNowPlaying> response) {
+                if(response.body().getResults() != null)
+                    nowPlayingMovies.addAll(response.body().getResults());
 
-                movieNowplayingAdapter = new MovieConciseAdapter(response.body().getResults(), getActivity());
-                rvMovieNowpalying.setAdapter(movieNowplayingAdapter);
+                movieNowplayingAdapter.notifyDataSetChanged();
 
             }
 
@@ -100,16 +111,17 @@ public class HomeDefaultFragment extends Fragment implements View.OnClickListene
         service.topRated(APIKEY, "hi", "IN", 1).enqueue(new Callback<MovieTopRated>() {
             @Override
             public void onResponse(Call<MovieTopRated> call, Response<MovieTopRated> response) {
-                List<Result> movies = new ArrayList<>();
 
                 for(Result result : response.body().getResults()){
                     if(Integer.parseInt(result.getReleaseDate().split("-")[0])>= 2000)
-                        movies.add(result);
+                        ratedMovies.add(result);
 
                 }
 
-                movieTopratedAdapter = new MovieConciseAdapter(movies, getActivity());
-                rvMovieToprated.setAdapter(movieTopratedAdapter);
+                movieTopratedAdapter.notifyDataSetChanged();
+
+
+
             }
 
             @Override

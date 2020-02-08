@@ -5,7 +5,7 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.1"
     defaultConfig {
-        applicationId "com.nilesh.bolly"
+        applicationId "com.mobile.bolly"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1

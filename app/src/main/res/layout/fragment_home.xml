@@ -20,21 +20,20 @@ xmlns:tools="http://schemas.android.com/tools"
         android:textColor="@color/colorPrimaryText"/>
 
     <androidx.appcompat.widget.SearchView
+        android:background="@drawable/rounded_corners_bg"
         android:id="@+id/search_view"
-        android:clickable="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="12dp"
-        android:background="@drawable/rounded_corners_bg"
-        app:queryHint="Search movies" />
+        app:queryHint="Search movie"/>
 
 
     <FrameLayout
         android:id="@+id/fl_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 
 </LinearLayout>

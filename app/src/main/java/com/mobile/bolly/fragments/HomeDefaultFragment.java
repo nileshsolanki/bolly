@@ -2,6 +2,7 @@ package com.mobile.bolly.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.mobile.bolly.models.MovieTopRated;
 import com.mobile.bolly.models.Result;
 import com.mobile.bolly.networking.RetrofitSingleton;
 import com.mobile.bolly.networking.TmdbService;
+import com.mobile.bolly.util.SharedPrefHelper;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -85,13 +87,86 @@ public class HomeDefaultFragment extends Fragment implements View.OnClickListene
 
         createSerivces();
 
-
-
         return view;
     }
 
     private void createSerivces() {
 
+        SharedPrefHelper sph = new SharedPrefHelper(getContext().getApplicationContext());
+        if(sph.getSearchResults(SharedPrefHelper.TYPE_NOW_PLAYING) != null
+                    && System.currentTimeMillis() - sph.getLastFetchTimeStamp() < 2*60*60*1000){
+            nowPlayingMovies.addAll(sph.getSearchResults(SharedPrefHelper.TYPE_NOW_PLAYING));
+            movieNowplayingAdapter.notifyDataSetChanged();
+        }else{
+            fetchNowPlaying(sph);
+        }
+
+
+        if(sph.getSearchResults(SharedPrefHelper.TYPE_TOPRATED) != null
+                && System.currentTimeMillis() - sph.getLastFetchTimeStamp() < 2*60*60*1000){
+            ratedMovies.addAll(sph.getSearchResults(SharedPrefHelper.TYPE_TOPRATED));
+            movieTopratedAdapter.notifyDataSetChanged();
+        }else{
+            fetchTopRated(sph);
+        }
+    }
+
+    private void fetchTopRated(SharedPrefHelper sph) {
+        TmdbService service = RetrofitSingleton.getTmdbService();
+        service.topRated(APIKEY, "hi", "IN", 1).enqueue(new Callback<MovieTopRated>() {
+            @Override
+            public void onResponse(Call<MovieTopRated> call, Response<MovieTopRated> response) {
+
+                for(Result result : response.body().getResults()){
+                    if(Integer.parseInt(result.getReleaseDate().split("-")[0])>= 2000) {
+                        RetrofitSingleton.getTmdbService().externalIds(result.getId(), APIKEY).enqueue(new Callback<MovieExternalIds>() {
+                            @Override
+                            public void onResponse(Call<MovieExternalIds> call, Response<MovieExternalIds> response) {
+                                if(response.body() != null){
+
+                                    RetrofitSingleton.getBollyService().getMovieDetails(response.body().getImdbId()).enqueue(new Callback<Movie>() {
+                                        @Override
+                                        public void onResponse(Call<Movie> call, Response<Movie> response) {
+                                            if(response.body() != null){
+                                                ratedMovies.add(result);
+                                                movieTopratedAdapter.notifyDataSetChanged();
+                                                sph.putSearchResults(SharedPrefHelper.TYPE_TOPRATED, ratedMovies);
+                                                sph.putFetchTimeStamp(System.currentTimeMillis());
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<Movie> call, Throwable t) {
+
+                                        }
+                                    });
+
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<MovieExternalIds> call, Throwable t) {
+
+                            }
+                        });
+
+
+                    }
+
+                }
+
+
+
+            }
+
+            @Override
+            public void onFailure(Call<MovieTopRated> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void fetchNowPlaying(SharedPrefHelper sph) {
         TmdbService service = RetrofitSingleton.getTmdbService();
         service.nowPlaying(APIKEY, "hi", "IN", 1).enqueue(new Callback<MovieNowPlaying>() {
             @Override
@@ -110,6 +185,9 @@ public class HomeDefaultFragment extends Fragment implements View.OnClickListene
                                             if(response.body() != null) {
                                                 nowPlayingMovies.add(movie);
                                                 movieNowplayingAdapter.notifyDataSetChanged();
+
+                                                sph.putSearchResults(SharedPrefHelper.TYPE_NOW_PLAYING, nowPlayingMovies);
+                                                sph.putFetchTimeStamp(System.currentTimeMillis());
                                             }
                                         }
 
@@ -136,84 +214,6 @@ public class HomeDefaultFragment extends Fragment implements View.OnClickListene
 
             }
         });
-
-
-        service.topRated(APIKEY, "hi", "IN", 1).enqueue(new Callback<MovieTopRated>() {
-            @Override
-            public void onResponse(Call<MovieTopRated> call, Response<MovieTopRated> response) {
-
-                for(Result result : response.body().getResults()){
-                    if(Integer.parseInt(result.getReleaseDate().split("-")[0])>= 2000) {
-                        RetrofitSingleton.getTmdbService().externalIds(result.getId(), APIKEY).enqueue(new Callback<MovieExternalIds>() {
-                            @Override
-                            public void onResponse(Call<MovieExternalIds> call, Response<MovieExternalIds> response) {
-                                if(response.body() != null){
-
-                                    RetrofitSingleton.getBollyService().getMovieDetails(response.body().getImdbId()).enqueue(new Callback<Movie>() {
-                                        @Override
-                                        public void onResponse(Call<Movie> call, Response<Movie> response) {
-                                            if(response.body() != null){
-                                                ratedMovies.add(result);
-                                                movieTopratedAdapter.notifyDataSetChanged();
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<Movie> call, Throwable t) {
-
-                                        }
-                                    });
-
-
-
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<MovieExternalIds> call, Throwable t) {
-
-                            }
-                        });
-
-
-                    }
-
-                }
-
-
-
-            }
-
-            @Override
-            public void onFailure(Call<MovieTopRated> call, Throwable t) {
-
-            }
-        });
-
-
-        String encodedQuery = "";
-
-        try {
-            encodedQuery = URLEncoder.encode("street dancer", "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-
-        service.searchMovie(APIKEY, encodedQuery, "hi", "IN", true, 1).enqueue(new Callback<MovieSearch>() {
-            @Override
-            public void onResponse(Call<MovieSearch> call, Response<MovieSearch> response) {
-                for(Result result : response.body().getResults()){
-                    Log.d(RESPONSE, result.getTitle());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MovieSearch> call, Throwable t) {
-
-            }
-        });
-
     }
 
     @Override

@@ -25,7 +25,6 @@ public class InfoFragment extends Fragment implements View.OnClickListener {
 
 
     View v;
-    private static InfoFragment infoFragment;
 
     @Nullable
     @Override
@@ -43,12 +42,7 @@ public class InfoFragment extends Fragment implements View.OnClickListener {
         return v;
     }
 
-    public static InfoFragment getInfoFragment(){
-        if(infoFragment == null)
-            infoFragment = new InfoFragment();
 
-        return infoFragment;
-    }
 
     @Override
     public void onClick(View view) {

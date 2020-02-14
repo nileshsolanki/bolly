@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "913446903195",
+    "firebase_url": "https://bolly-e740d.firebaseio.com",
+    "project_id": "bolly-e740d",
+    "storage_bucket": "bolly-e740d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:913446903195:android:fcfaf1a51d18f279f7153e",
+        "android_client_info": {
+          "package_name": "com.mobile.bolly"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "913446903195-dlrklog6m4aui77v59k9gt6v8nkj8e0t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiPn8Drknjd3Ad0ERCII6oU8Voxiq5N8s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "913446903195-dlrklog6m4aui77v59k9gt6v8nkj8e0t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

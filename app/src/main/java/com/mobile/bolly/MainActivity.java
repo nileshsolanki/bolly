@@ -30,7 +30,7 @@ import static com.mobile.bolly.util.Common.fullScreen;
 public class MainActivity extends AppCompatActivity {
     FrameLayout flSwitch;
     BottomNavigationView bottomNav;
-    private static int selectedItem = 0;
+    private int selectedItem = 0;
     ConnectivityChangeReceiver connectivityReceiver;
 
     @Override
@@ -120,22 +120,20 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.bookmarks:
                         getSupportFragmentManager().beginTransaction()
                                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                                .replace(R.id.fl_switch_main, BookmarkFragment.getBookmarkFragment()).commit();
+                                .replace(R.id.fl_switch_main, new BookmarkFragment()).commit();
                         break;
 
 
                     case R.id.info:
                         getSupportFragmentManager().beginTransaction()
                                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                                .replace(R.id.fl_switch_main, InfoFragment.getInfoFragment()).commit();
+                                .replace(R.id.fl_switch_main, new InfoFragment()).commit();
                         break;
 
                     default: //or r.id.home
                         getSupportFragmentManager().beginTransaction()
                                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                                .replace(R.id.fl_switch_main, HomeFragment.getHomeFragment()).commit();
-                        break;
-
+                                .replace(R.id.fl_switch_main, new HomeFragment()).commit();
                 }
 
                 return true;

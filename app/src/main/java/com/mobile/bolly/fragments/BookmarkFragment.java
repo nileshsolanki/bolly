@@ -14,8 +14,6 @@ import com.mobile.bolly.R;
 public class BookmarkFragment extends Fragment {
     View v;
 
-    private static BookmarkFragment bookmarkFragment = null;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -23,11 +21,5 @@ public class BookmarkFragment extends Fragment {
         return v;
     }
 
-    public static BookmarkFragment getBookmarkFragment(){
-        if (bookmarkFragment == null)
-            bookmarkFragment = new BookmarkFragment();
-
-        return bookmarkFragment;
-    }
 
 }

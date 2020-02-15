@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.mobile.bolly.MovieDetailActivity;
 import com.mobile.bolly.R;
 import com.mobile.bolly.models.Suggestion;
 
@@ -112,6 +113,9 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Su
                 public void onClick(View view) {
 
                     int position = getAdapterPosition();
+                    Intent detail = new Intent(context, MovieDetailActivity.class);
+                    detail.putExtra("tmdb_id", suggestions.get(position).getTmdbId());
+                    context.startActivity(detail);
 
                 }
             });

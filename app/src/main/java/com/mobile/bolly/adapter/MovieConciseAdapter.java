@@ -17,9 +17,11 @@ import com.mobile.bolly.R;
 import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
 import com.mobile.bolly.MovieDetailActivity;
+import com.mobile.bolly.models.MovieDetails;
 import com.mobile.bolly.models.Result;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.mobile.bolly.constants.Tmdb.POSTER_DOMAIN_185;
@@ -53,7 +55,7 @@ public class MovieConciseAdapter extends RecyclerView.Adapter<MovieConciseAdapte
                 public void onClick(View view) {
                     int position = getAdapterPosition();
                     Intent movieDetail = new Intent(activity, MovieDetailActivity.class);
-                    movieDetail.putExtra("result", (Serializable) movieDataset.get(position));
+                    movieDetail.putExtra("result", movieDataset.get(position));
 
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                             activity,

@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.mobile.bolly.R;
 import com.mobile.bolly.adapter.SuggestionAdapter;
@@ -64,25 +65,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         searchView = view.findViewById(R.id.search_view);
         flSwitch = view.findViewById(R.id.fl_switch);
 
-
         searchView.setOnClickListener(this);
         searchView.findViewById(R.id.search_close_btn).setOnClickListener(this);
         searchView.findViewById(R.id.search_src_text).setOnClickListener(this);
 
 
-
-        setQueryListener(searchView);
-
         return view;
-
 
     }
 
     private void setQueryListener(SearchView searchView) {
-
-        HomeSearchFragment homeSearchFragment = (HomeSearchFragment) getFragmentManager().findFragmentByTag("SEARCH");
-        if(homeSearchFragment != null)
-            adapter = homeSearchFragment.adapter;
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -93,14 +85,25 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public boolean onQueryTextChange(String newText) {
 
-                if(homeSearchFragment != null && adapter != null) {
+
+                HomeSearchFragment homeSearchFragment = (HomeSearchFragment) getActivity().getSupportFragmentManager().findFragmentByTag("SEARCH");
+                if(homeSearchFragment == null){
+                    HomeSearchFragment searchFragment = new HomeSearchFragment();
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fl_switch, searchFragment, "SEARCH").commit();
+                    currentFragment = HOME_SEARCH_FRAGMENT;
+                }
+                else if(homeSearchFragment != null) {
+                    adapter = homeSearchFragment.adapter;
                     if (oldText != null && adapter.getItemCount() > 0 && newText.contains(oldText)) {
                         textChangeStamp = System.currentTimeMillis();
                         adapter.getFilter().filter(newText);
 
-                    } else if (newText.length() >= 2 && System.currentTimeMillis() - textChangeStamp >= 700) {
+                    } else if (newText.length() >= 2 && System.currentTimeMillis() - textChangeStamp >= 800) {
                         textChangeStamp = System.currentTimeMillis();
                         fetchSuggestions(newText);
+                    }else{
+                        fetchSuggestions(newText);
+                        textChangeStamp = System.currentTimeMillis();
                     }
                     oldText = newText;
 
@@ -144,7 +147,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     HomeSearchFragment searchFragment = new HomeSearchFragment();
                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fl_switch, searchFragment, "SEARCH").commit();
                     currentFragment = HOME_SEARCH_FRAGMENT;
-
+                    setQueryListener(searchView);
                     view.findViewById(R.id.search_button).performClick();
                 }
                 break;
@@ -155,6 +158,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     HomeSearchFragment searchFragment = new HomeSearchFragment();
                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fl_switch, searchFragment, "SEARCH").commit();
                     currentFragment = HOME_SEARCH_FRAGMENT;
+                    setQueryListener(searchView);
+
                 }
                 break;
 

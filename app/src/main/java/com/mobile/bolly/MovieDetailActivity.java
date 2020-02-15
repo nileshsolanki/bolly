@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
-import com.mobile.bolly.R;
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.button.MaterialButton;
@@ -96,32 +94,26 @@ public class MovieDetailActivity extends AppCompatActivity{
 
         Intent intent = getIntent();
         Result result = (Result) intent.getSerializableExtra("result");
+        int tmdbId = intent.getIntExtra("tmdb_id", 0);
         if(result != null){
-
-            tvTitle.setText(result.getTitle());
-            tvRating.setText(result.getVoteAverage() + "");
-            String dateObjs [] = result.getReleaseDate().split("-");
-            tvYear.setText(dateObjs[0] + " " + months[Integer.parseInt(dateObjs[1])]);
-            tvDescription.setText(result.getOverview());
-            tvLanguage.setText(result.getOriginalLanguage().toUpperCase());
-
-
-
+            populateResultData(result);
+            fetchDetails(result.getId(), result);
+        }else if(tmdbId != 0){
+            fetchDetails(tmdbId, null);
         }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            String imageTransitionName = result.getId() + "";
-            ivPoster.setTransitionName(imageTransitionName);
-        }
-
-        Glide.with(this).load(POSTER_DOMAIN_500 + result.getPosterPath()).into(ivPoster);
-        fetchDetails(result);
 
 
         fabBookmark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make((CoordinatorLayout)btnBack.getParent(), "Comming Soon", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MovieDetailActivity.super.onBackPressed();
             }
         });
 
@@ -157,13 +149,29 @@ public class MovieDetailActivity extends AppCompatActivity{
 
     }
 
+    private void populateResultData(Result result) {
+
+        tvTitle.setText(result.getTitle());
+        tvRating.setText(result.getVoteAverage() + "");
+        String dateObjs [] = result.getReleaseDate().split("-");
+        tvYear.setText(dateObjs[0] + " " + months[Integer.parseInt(dateObjs[1])]);
+        tvDescription.setText(result.getOverview());
+        tvLanguage.setText(result.getOriginalLanguage().toUpperCase());
+
+        String imageTransitionName = result.getId() + "";
+        ivPoster.setTransitionName(imageTransitionName);
+
+        Glide.with(this).load(POSTER_DOMAIN_500 + result.getPosterPath()).into(ivPoster);
+
+    }
+
     public static int dpToPx(int dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
-    private void fetchDetails(Result result) {
+    private void fetchDetails(int tmdbId, Result result) {
 
-        RetrofitSingleton.getTmdbService().details(result.getId(), APIKEY).enqueue(new retrofit2.Callback<MovieDetails>() {
+        RetrofitSingleton.getTmdbService().details(tmdbId, APIKEY).enqueue(new retrofit2.Callback<MovieDetails>() {
             @Override
             public void onResponse(Call<MovieDetails> call, Response<MovieDetails> response) {
                 details = response.body();
@@ -172,6 +180,17 @@ public class MovieDetailActivity extends AppCompatActivity{
                 if(details.getGenres().size() >= 1)
                     tvGenre.setText(details.getGenres().get(0).getName());
 
+                if(result == null){
+                    Result tempResult = new Result();
+                    tempResult.setPosterPath(details.getPosterPath().toString());
+                    tempResult.setOriginalLanguage(details.getOriginalLanguage());
+                    tempResult.setOverview(details.getOverview());
+                    tempResult.setReleaseDate(details.getReleaseDate());
+                    tempResult.setTitle(details.getTitle());
+                    tempResult.setVoteAverage(details.getVoteAverage());
+                    populateResultData(tempResult);
+                }
+
 
                 btnWatchNow.setOnClickListener(onWatchClick(response.body().getImdbId()));
             }
@@ -179,14 +198,6 @@ public class MovieDetailActivity extends AppCompatActivity{
             @Override
             public void onFailure(Call<MovieDetails> call, Throwable t) {
 
-            }
-        });
-
-
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MovieDetailActivity.super.onBackPressed();
             }
         });
 

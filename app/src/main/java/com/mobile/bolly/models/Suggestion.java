@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class Suggestion {
 
-    @SerializedName("imdb_id")
+    @SerializedName("tmdb_id")
     @Expose
-    private String imdbId;
+    private Integer tmdbId;
     @SerializedName("title")
     @Expose
     private String title;
@@ -15,12 +15,12 @@ public class Suggestion {
     @Expose
     private String year;
 
-    public String getImdbId() {
-        return imdbId;
+    public Integer getTmdbId() {
+        return tmdbId;
     }
 
-    public void setImdbId(String imdbId) {
-        this.imdbId = imdbId;
+    public void setTmdbId(Integer tmdbId) {
+        this.tmdbId = tmdbId;
     }
 
     public String getTitle() {

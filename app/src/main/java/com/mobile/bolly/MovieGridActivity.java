@@ -14,15 +14,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.mobile.bolly.R;
 import com.mobile.bolly.adapter.GridSpacingItemDecoration;
 import com.mobile.bolly.adapter.MovieConciseAdapter;
+import com.mobile.bolly.models.MovieDetails;
 import com.mobile.bolly.models.MovieDiscover;
 import com.mobile.bolly.models.MovieNowPlaying;
 import com.mobile.bolly.models.MovieTopRated;
 import com.mobile.bolly.models.Result;
+import com.mobile.bolly.networking.BollyService;
 import com.mobile.bolly.networking.RetrofitSingleton;
 import com.mobile.bolly.util.ConnectivityChangeReceiver;
+import com.mobile.bolly.util.SharedPrefHelper;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -42,7 +44,7 @@ public class MovieGridActivity extends AppCompatActivity {
     RecyclerView gridRecycler;
     MovieConciseAdapter adapter;
     TextView tvCollectionType;
-    public static final int categoryLatest = 1, categoryToprated = 2, categoryGenre = 3, categoryYear = 4;
+    public static final int categoryRecent = 1, categoryToprated = 2, categoryGenre = 3, categoryYear = 4;
     List<Result> movies = new ArrayList<Result>();
     int page = 1;
     int category;
@@ -103,32 +105,41 @@ public class MovieGridActivity extends AppCompatActivity {
 
         switch (categoryType){
 
-            case categoryLatest:
-                tvCollectionType.setText("Now Showing");
-                RetrofitSingleton.getTmdbService().nowPlaying(APIKEY, "hi", "IN", page)
-                        .enqueue(new Callback<MovieNowPlaying>() {
-                            @Override
-                            public void onResponse(Call<MovieNowPlaying> call, Response<MovieNowPlaying> response) {
-                                if(response.body().getResults() != null){
-                                    movies.addAll(response.body().getResults());
-                                    adapter.notifyDataSetChanged();
+            case categoryRecent:
+                tvCollectionType.setText("Recent Additions");
 
-                                    Log.d("PageTotal", response.body().getTotalPages() + "");
-                                    Log.d("Page", response.body().getPage() + "");
+                BollyService service = RetrofitSingleton.getBollyService();
+                service.getRecents().enqueue(new Callback<List<MovieDetails>>() {
+                    @Override
+                    public void onResponse(Call<List<MovieDetails>> call, Response<List<MovieDetails>> response) {
+                        if(response.body() != null){
+                            for(MovieDetails details: response.body()){
+                                Result movie = new Result();
+                                movie.setVoteAverage(details.getVoteAverage());
+                                movie.setTitle(details.getTitle());
+                                movie.setReleaseDate(details.getReleaseDate());
+                                movie.setOverview(details.getOverview());
+                                movie.setOriginalLanguage(details.getOriginalLanguage());
+                                movie.setPosterPath((String) details.getPosterPath());
+                                movie.setAdult(details.getAdult());
+                                movie.setBackdropPath(details.getBackdropPath());
+                                movie.setId(details.getId());
+                                movie.setPopularity(details.getPopularity());
+                                movie.setVideo(details.getVideo());
+                                movie.setVoteCount(details.getVoteCount());
 
-                                    if(response.body().getPage() < response.body().getTotalPages()){
-                                        page += 1;
-                                        fetchMoviesByCategory(category);
-                                    }
-                                }
-
+                                movies.add(movie);
                             }
+                            adapter.notifyDataSetChanged();
 
-                            @Override
-                            public void onFailure(Call<MovieNowPlaying> call, Throwable t) {
+                        }
+                    }
 
-                            }
-                        });
+                    @Override
+                    public void onFailure(Call<List<MovieDetails>> call, Throwable t) {
+
+                    }
+                });
 
                 break;
 

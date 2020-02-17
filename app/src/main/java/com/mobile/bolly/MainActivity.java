@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.mobile.bolly.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.mobile.bolly.fragments.BookmarkFragment;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        FirebaseMessaging.getInstance().subscribeToTopic("recent");
 
         flSwitch = findViewById(R.id.fl_switch_main);
         bottomNav = findViewById(R.id.bottom_nav);

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,8 +38,9 @@ public class UpdateFragment extends Fragment implements View.OnClickListener {
     MaterialButton btnDownload;
     ImageButton btnBack;
     ImageView ivLoading;
-    String downloadUrl, versionName;
-    TextView tvProgress;
+    String downloadUrl, versionName = "";
+    TextView tvProgress, tvVersionName;
+    ScrollView svInstructions;
     DownloadFileFromURL downloadFileFromURL = null;
 
 
@@ -63,12 +65,15 @@ public class UpdateFragment extends Fragment implements View.OnClickListener {
 
         }
 
+        svInstructions = v.findViewById(R.id.sv_instructions);
         btnDownload = v.findViewById(R.id.btn_download_update);
         btnDownload.setOnClickListener(this);
         btnBack = v.findViewById(R.id.btn_back);
         btnBack.setOnClickListener(this);
         ivLoading = v.findViewById(R.id.iv_loading);
         tvProgress = v.findViewById(R.id.tv_progress);
+        tvVersionName = v.findViewById(R.id.tv_version_name);
+        tvVersionName.setText("Follow the below instrutions after download is complete to update your app to v" + versionName);
 
 
         return v;
@@ -84,6 +89,8 @@ public class UpdateFragment extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.btn_download_update:
+                svInstructions.setVisibility(View.GONE);
+                ivLoading.setVisibility(View.VISIBLE);
                 btnDownload.setVisibility(View.INVISIBLE);
                 downloadFileFromURL = new DownloadFileFromURL();
                 downloadFileFromURL.execute(downloadUrl);

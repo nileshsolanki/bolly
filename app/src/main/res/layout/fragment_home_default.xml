@@ -21,14 +21,14 @@ android:layout_height="match_parent">
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_gravity="start"
-            android:text="Now Showing"
+            android:text="Recent Additions"
             android:textSize="20dp"
             android:textStyle="bold"
             android:textColor="@color/colorPrimaryText"/>
 
 
         <TextView
-            android:id="@+id/tv_more_showing"
+            android:id="@+id/tv_more_recent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="more >"
@@ -146,17 +146,6 @@ android:layout_height="match_parent">
             android:textSize="20dp"
             android:textStyle="bold"
             android:textColor="@color/colorPrimaryText"/>
-
-
-        <!--                    <TextView-->
-        <!--                        android:layout_width="wrap_content"-->
-        <!--                        android:layout_height="wrap_content"-->
-        <!--                        android:text="more >"-->
-        <!--                        android:textColor="@color/colorAccent"-->
-        <!--                        android:layout_gravity="end|bottom"-->
-        <!--                        android:paddingHorizontal="16dp"-->
-        <!--                        android:paddingVertical="4dp"-->
-        <!--                        android:foreground="?android:selectableItemBackground"/>-->
 
 
     </FrameLayout>

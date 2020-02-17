@@ -1,6 +1,7 @@
 package com.mobile.bolly.networking;
 
 import com.mobile.bolly.models.Movie;
+import com.mobile.bolly.models.MovieDetails;
 import com.mobile.bolly.models.Suggestion;
 
 import java.util.Calendar;
@@ -24,4 +25,8 @@ public interface BollyService {
     Call<List<Suggestion>> getSuggestions(
             @Query("query") String query
     );
+
+
+    @GET("/recent")
+    Call<List<MovieDetails>> getRecents();
 }

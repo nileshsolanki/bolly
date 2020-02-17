@@ -14,7 +14,7 @@ import java.util.List;
 public class SharedPrefHelper {
 
     Context context;
-    public static final String TYPE_NOW_PLAYING = "nowplaying", TYPE_TOPRATED = "toprated";
+    public static final String TYPE_RECENTS = "recents", TYPE_TOPRATED = "toprated";
     public SharedPrefHelper(Context context){
         this.context = context;
     }

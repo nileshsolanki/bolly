@@ -9,48 +9,145 @@
     android:clickable="true"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageButton
-        android:id="@+id/btn_back"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
         android:layout_marginTop="32dp"
-        android:layout_marginStart="24dp"
-        android:src="@drawable/ic_back"/>
+        android:layout_marginStart="24dp">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_back"/>
+
+        <TextView
+            android:layout_marginStart="12dp"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="24dp"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:layout_height="wrap_content"
+            android:text="Update App"/>
+
+    </LinearLayout>
+
+
 
     <TextView
-        android:textColor="@color/colorPrimaryText"
-        android:layout_marginTop="24dp"
-        android:textSize="24dp"
-        android:layout_width="match_parent"
-        android:gravity="center"
-        android:textAlignment="center"
-        android:layout_height="wrap_content"
-        android:text="New Update Available"/>
-
-    <TextView
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="24dp"
         android:id="@+id/tv_version_name"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="12dp"
         android:textSize="16dp"
+        android:textColor="@color/colorPrimaryText"
         android:layout_width="match_parent"
-        android:gravity="center"
-        android:textAlignment="center"
         android:layout_height="wrap_content"
-        android:text="version: 1.0.0"/>
+        android:text="Follow the below instrutions after download is complete to update your app to v0.0.1"/>
 
 
 
 
 
     <ImageView
+        android:visibility="gone"
         android:id="@+id/iv_loading"
         android:layout_gravity="center_horizontal"
         android:layout_weight="1"
-        android:layout_marginTop="56dp"
         android:maxWidth="100dp"
         android:maxHeight="100dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
+
+    <ScrollView
+        android:id="@+id/sv_instructions"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:paddingHorizontal="24dp"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_marginTop="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="Step 1: Select 'Settings'"/>
+
+            <ImageView
+                android:layout_marginBottom="56dp"
+                android:scaleType="centerInside"
+                android:layout_width="350dp"
+                android:layout_height="180dp"
+                android:src="@drawable/install_blocked"/>
+
+            <TextView
+                android:textStyle="bold"
+                android:layout_marginTop="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Step 2: Toggle 'Allow from this source' to ON"/>
+
+
+            <ImageView
+                android:layout_marginBottom="56dp"
+                android:scaleType="centerInside"
+                android:layout_width="350dp"
+                android:layout_height="390dp"
+                android:src="@drawable/allow_off"/>
+
+            <TextView
+                android:textStyle="bold"
+                android:layout_marginTop="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Step 3: Make sure your toggle status is as shown and press back button"/>
+
+
+            <ImageView
+                android:layout_marginBottom="56dp"
+                android:scaleType="centerInside"
+                android:layout_width="350dp"
+                android:layout_height="390dp"
+                android:src="@drawable/allow_on"/>
+
+            <TextView
+                android:textStyle="bold"
+                android:layout_marginTop="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Step 4: Finally click 'Install'"/>
+
+
+            <ImageView
+                android:layout_marginBottom="56dp"
+                android:scaleType="centerInside"
+                android:layout_width="350dp"
+                android:layout_height="180dp"
+                android:src="@drawable/install_unblocked"/>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Note: Based on your android os version and manufacturer, some of the abve steps may be skipped"/>
+
+
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
 
     <TextView
         android:textColor="@color/colorPrimaryText"
@@ -65,12 +162,13 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_download_update"
-        android:padding="12dp"
-        android:layout_marginTop="48dp"
-        android:layout_marginBottom="98dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="download"/>
+        app:cornerRadius="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="12dp"
+        android:text="download"
+        android:textColor="#fff"
+        android:textStyle="bold" />
 
 </LinearLayout>

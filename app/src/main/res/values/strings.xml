@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">bolly</string>
     <string name="attributions">\n<b><u>ATTRIBUTIONS</u></b>\n\nicon made by Freepik from www.flaticon.com \n\nPowered by</string>
+    <string name="default_notification_channel_id">default</string>
 </resources>

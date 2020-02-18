@@ -25,6 +25,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.mobile.bolly.util.Common.checkUpdate;
 import static com.mobile.bolly.util.Common.fullScreen;
 
 
@@ -67,45 +68,11 @@ public class MainActivity extends AppCompatActivity {
         setNavigationListener(bottomNav);
         bottomNav.setSelectedItemId(R.id.home);
 
-        checkUpdate();
+        checkUpdate(getSupportFragmentManager());
 
     }
 
-    private void checkUpdate() {
 
-        RetrofitSingleton.getUpdateService().checkUpdates().enqueue(new Callback<UpdateLog>() {
-            @Override
-            public void onResponse(Call<UpdateLog> call, Response<UpdateLog> response) {
-                if(response.body().getLatestVersion() != null){
-
-                    if(BuildConfig.VERSION_CODE < response.body().getLatestVersionCode() ){
-
-                        Bundle args = new Bundle();
-                        args.putString("downloadUrl", response.body().getUrl());
-                        args.putString("version", response.body().getLatestVersion());
-
-                        UpdateFragment updateFragment = new UpdateFragment();
-                        updateFragment.setArguments(args);
-
-                        getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                                .add(android.R.id.content, updateFragment, "update")
-                                .addToBackStack("stack")
-                                .commit();
-
-                    }
-
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UpdateLog> call, Throwable t) {
-
-            }
-        });
-
-
-    }
 
     private void setNavigationListener(BottomNavigationView bottomNav) {
 

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".tv.UpdateActivityTv"
+    android:orientation="vertical"
+    android:background="#424242"
+    >
+
+
+    <TextView
+        android:textStyle="bold"
+        android:textSize="32dp"
+        android:textColor="@color/colorSecondaryLight"
+        android:paddingTop="32dp"
+        android:paddingStart="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Update app"/>
+
+    <TextView
+        android:textStyle="bold"
+        android:textSize="22dp"
+        android:textColor="@color/colorSecondaryLight"
+        android:paddingTop="32dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please update your app to get best features, bug fixes and overall perfomance imporvement of app"/>
+
+
+
+
+    <TextView
+        android:id="@+id/tv_progress"
+        android:visibility="invisible"
+        android:layout_marginVertical="24dp"
+        android:layout_gravity="center"
+        android:textSize="55dp"
+        android:gravity="center"
+        android:paddingStart="24dp"
+        android:textColor="@color/colorSecondaryLight"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 %"/>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_startdownload"
+        app:cornerRadius="12dp"
+        android:backgroundTint="@color/colorSecondaryLight"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:focusedByDefault="true"
+        android:layout_gravity="center_horizontal"
+        android:textColor="#212121"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_marginBottom="80dp"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:text="Press Enter to download"/>
+
+</LinearLayout>

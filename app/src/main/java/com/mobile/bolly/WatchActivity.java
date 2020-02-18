@@ -1,9 +1,12 @@
 package com.mobile.bolly;
 
 import android.Manifest;
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -11,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -58,6 +62,7 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
     ImageView ivLoading;
     TorrentStreamServer torrentStreamServer;
     TextView tvProgress;
+    FrameLayout flRoot;
     private String TORRENT = "torrent";
     SimpleExoPlayer player = null;
     private static int currentProgress = 0;
@@ -114,13 +119,16 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
         setContentView(R.layout.activity_watch);
 
 
-
+        flRoot = findViewById(R.id.fl_root);
         tvProgress = findViewById(R.id.tv_progress);
         btnBack = findViewById(R.id.imgbtn_back);
         exoplayerView = findViewById(R.id.exoplayer);
         ivLoading = findViewById(R.id.iv_loading);
+
+        //setUiConfigurations();
+
         Glide.with(WatchActivity.this)
-                .load(R.drawable.popcorn_running)
+                .load(R.drawable.popcorn_comming)
                 .transition(new DrawableTransitionOptions().crossFade())
                 .into(ivLoading);
         String id = getIntent().getStringExtra("id");
@@ -160,6 +168,14 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
                 WatchActivity.super.onBackPressed();
             }
         });
+    }
+
+
+    private void setUiConfigurations(){
+        UiModeManager uiModeManager = (UiModeManager) getSystemService(UI_MODE_SERVICE);
+        if (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION) {
+            flRoot.setBackground(new ColorDrawable(getResources().getColor(R.color.colorSecondaryText)));
+        }
     }
 
 

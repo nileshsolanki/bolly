@@ -7,4 +7,6 @@
     <color name="colorSecondaryText">#D7D4DF</color>
     <color name="colorPrimaryText">#F0000000</color>
     <color name="colorAccentYellow">#FF9800</color>
+    <color name="default_background_card">#3d3d3d</color>
+    <color name="darken_transparent">#90000000</color>
 </resources>

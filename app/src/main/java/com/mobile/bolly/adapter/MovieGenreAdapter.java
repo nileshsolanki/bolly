@@ -15,33 +15,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.mobile.bolly.R;
 import com.mobile.bolly.MovieGridActivity;
 
+import static com.mobile.bolly.constants.Tmdb.genreDrawables;
+import static com.mobile.bolly.constants.Tmdb.genreIds;
+import static com.mobile.bolly.constants.Tmdb.genres;
+
 public class MovieGenreAdapter extends RecyclerView.Adapter<MovieGenreAdapter.GenreViewHolder> {
     Context context;
 
-    public  static final String [] genres = new String[]{
-      "ACTION",
-      "ADVENTURE",
-      "ANIMATION",
-        "COMEDY",
-        "CRIME",
-        "DOCUMENTARY",
-        "DRAMA",
-        "FAMILY",
-        "FANTACY",
-        "HISTORY",
-        "HORROR",
-        "MUSICAL",
-        "MYSTERY",
-        "ROMANCE",
-        "SCI-FI",
-        "THRILLER",
-        "WAR"
-    };
 
-    public static final Integer [] genreIds = new Integer[] { 28, 12, 16, 35, 80, 99, 18, 10751, 14, 36, 27, 10402, 9648, 10749, 878, 53, 10752};
-    int [] genreDrawables = new int[] {R.drawable.action, R.drawable.adventure, R.drawable.animation, R.drawable.comedy, R.drawable.crime,
-                    R.drawable.documentary, R.drawable.drama, R.drawable.family, R.drawable.fantasy, R.drawable.history, R.drawable.horror, R.drawable.musical,
-                    R.drawable.mystery, R.drawable.romance, R.drawable.science_fiction, R.drawable.thriller,R.drawable.war};
 
     public MovieGenreAdapter(Context ctx) {
         context = ctx;

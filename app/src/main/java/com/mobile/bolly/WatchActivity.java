@@ -10,19 +10,27 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.google.android.material.button.MaterialButton;
 import com.mobile.bolly.R;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
@@ -44,17 +52,31 @@ import com.google.android.exoplayer2.util.Util;
 import com.google.android.material.snackbar.Snackbar;
 import com.mobile.bolly.models.Movie;
 import com.mobile.bolly.networking.RetrofitSingleton;
+import com.mobile.bolly.util.DownloadingForegroundService;
 
+import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Target;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.UnknownHostException;
 
+import okhttp3.Connection;
 import retrofit2.Call;
 import retrofit2.Response;
+import retrofit2.http.Url;
 
 import static android.view.View.GONE;
 import static com.mobile.bolly.util.Common.fullScreen;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_SEEK;
+import static com.mobile.bolly.util.Util.showToast;
+import static com.mobile.bolly.util.Util.startMxPlayer;
 
 public class WatchActivity extends AppCompatActivity implements TorrentServerListener {
 
@@ -67,6 +89,11 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
     SimpleExoPlayer player = null;
     private static int currentProgress = 0;
     ImageButton btnBack;
+    String id;
+
+    LinearLayout llLoading;
+    ViewSwitcher viewSwitcher;
+    MaterialButton btnReport;
 
 
     @Override
@@ -125,15 +152,20 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
         exoplayerView = findViewById(R.id.exoplayer);
         ivLoading = findViewById(R.id.iv_loading);
 
+        llLoading = findViewById(R.id.ll_loading);
+        viewSwitcher = findViewById(R.id.view_switcher);
+        btnReport = findViewById(R.id.btn_report);
+
+        delayedViewSwitcherDisplay();
+
         //setUiConfigurations();
 
         Glide.with(WatchActivity.this)
                 .load(R.drawable.popcorn_comming)
-                .transition(new DrawableTransitionOptions().crossFade())
                 .into(ivLoading);
         String id = getIntent().getStringExtra("id");
         if(id != null){
-
+            this.id = id;
             String ipAddress = "127.0.0.1";
             try {
                 InetAddress inetAddress = getIpAddress(this);
@@ -146,7 +178,8 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
 
             TorrentOptions torrentOptions = new TorrentOptions.Builder()
                     .saveLocation(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS))
-                    .removeFilesAfterStop(true)
+                    .removeFilesAfterStop(false)
+                    .autoDownload(true)
                     .build();
 
             torrentStreamServer = TorrentStreamServer.getInstance();
@@ -158,6 +191,8 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
             fetchTorrent(id);
 
 
+        }else{
+            exit("We are sorry this content is not available. Exiting");
         }
 
 
@@ -168,6 +203,43 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
                 WatchActivity.super.onBackPressed();
             }
         });
+
+
+        btnReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RetrofitSingleton.postReport(id, 1, 0);
+                viewSwitcher.showNext();
+            }
+        });
+    }
+
+    private void delayedViewSwitcherDisplay() {
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if(viewSwitcher != null)
+                    viewSwitcher.setVisibility(View.VISIBLE);
+            }
+        };
+
+        Handler handler = new Handler();
+        handler.postDelayed(runnable, 20*1000);
+
+
+    }
+
+    private void exit(String message) {
+        llLoading.setVisibility(View.INVISIBLE);
+        showToast(this, message);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                WatchActivity.super.onBackPressed();
+            }
+        }, 5000);
+
     }
 
 
@@ -187,8 +259,7 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
             public void onResponse(Call<Movie> call, Response<Movie> response) {
 
                 if(response.body() == null){
-                    Toast.makeText(WatchActivity.this, "No media file found!", Toast.LENGTH_SHORT).show();
-                    ivLoading.setVisibility(View.INVISIBLE);
+                    exit("Not yet available! Stay tuned. Exiting");
                     return;
                 }
 
@@ -314,58 +385,22 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
     public void onServerReady(String url) {
 
         Log.d(TORRENT, "onServerReady: " + url);
-        ivLoading.setVisibility(GONE);
+        llLoading.setVisibility(GONE);
         //todo play video is disabled for now; mx player required
-//        playVideo(Uri.parse(url));
+        //playVideo(Uri.parse(url));
 
+        RetrofitSingleton.postReport(id, 0, 1);
 
-
-        startMxPlayer(url);
-
-    }
-
-    private void startMxPlayer(String url) {
-        final String MX_AD = "com.mxtech.videoplayer.ad";
-        final String MX_PRO = "com.mxtech.videoplayer.pro";
-
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        intent.setData(Uri.parse(url));
-
-
-        final PackageManager packageManager = WatchActivity.this.getPackageManager();
-        Intent pro = packageManager.getLaunchIntentForPackage(MX_PRO);
-        Intent ad = packageManager.getLaunchIntentForPackage(MX_AD);
-
-        if(pro != null){
-            intent.setPackage(MX_PRO);
-            startActivity(intent);
-        }else if(ad != null){
-            intent.setPackage(MX_AD);
-            startActivity(intent);
-        }else{
-            Snackbar.make(btnBack.getRootView(), "MX Player required", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Install", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            try {
-                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + MX_AD)));
-                            } catch (android.content.ActivityNotFoundException anfe) {
-                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + MX_AD)));
-                            }
-                        }
-                    })
-                    .setActionTextColor(getResources().getColor(R.color.colorAccentYellow)).show();
-        }
-
-
-
-
+        startMxPlayer(WatchActivity.this, url, btnBack.getRootView());
 
     }
+
+
 
     @Override
     public void onStreamPrepared(Torrent torrent) {
         Log.d(TORRENT, "OnStreamPrepared");
+
     }
 
     @Override
@@ -382,10 +417,12 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
     @Override
     public void onStreamReady(Torrent torrent) {
         Log.d(TORRENT, "stream ready");
+
     }
 
     @Override
     public void onStreamProgress(Torrent torrent, StreamStatus status) {
+        //Log.d("FILE SIZE", torrent.getVideoFile().getAbsoluteFile().length() + " bytes");
         if(status.bufferProgress <= 100 && currentProgress < status.bufferProgress && currentProgress != status.bufferProgress) {
             tvProgress.setText("Baking... "+ status.bufferProgress + "%");
 
@@ -395,5 +432,75 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
     @Override
     public void onStreamStopped() {
         Log.d(TORRENT, "onStreamStopped");
+    }
+
+
+
+
+
+
+    private class Downloader extends AsyncTask<String, String, String>{
+
+        @Override
+        protected String doInBackground(String... strings) {
+            String url = strings[0];
+            Torrent torrent = torrentStreamServer.getCurrentTorrent();
+
+
+            long lenghtOfFile = torrent.getVideoFile().length();
+            Log.d("FILE LENGTH", lenghtOfFile + " bytes");
+            byte [] data = new byte[1024];
+            long  total = 0;
+            int count;
+            InputStream input = null;
+            OutputStream output = null;
+            String filepath = torrent.getVideoFile().getAbsolutePath();
+            try {
+                String extension =  filepath.substring(filepath.lastIndexOf("."));
+                URL mUrl = new URL(url);
+                URLConnection connection = mUrl.openConnection();
+                connection.connect();
+
+                input = new BufferedInputStream(mUrl.openStream(), 8192);
+
+
+                output = new FileOutputStream(getExternalFilesDir(Environment.DIRECTORY_MOVIES) + "/movie" + extension);
+                int oldProgress = 0;
+                while ((count = input.read(data)) != -1) {
+                    total += count;
+                    // publishing the progress....
+                    // After this onProgressUpdate will be called
+
+                    int progress = (int) ((total * 100) / lenghtOfFile);
+                    if(oldProgress != progress){
+                        Log.d("PROGRESS", progress + "");
+                        oldProgress = progress;
+                    }
+
+
+                    // writing data to file
+                    output.write(data, 0, count);
+                }
+
+                // flushing output
+                output.flush();
+
+                // closing streams
+                output.close();
+                input.close();
+
+
+
+
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+
+        }
     }
 }

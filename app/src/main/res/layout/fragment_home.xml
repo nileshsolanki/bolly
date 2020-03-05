@@ -11,12 +11,13 @@ xmlns:tools="http://schemas.android.com/tools"
     android:paddingStart="24dp">
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="34dp"
         android:text="Bolly"
         android:textSize="24dp"
         android:textStyle="bold"
+        android:src="@drawable/logo"
         android:textColor="@color/colorPrimaryText"/>
 
     <androidx.appcompat.widget.SearchView

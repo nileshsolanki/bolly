@@ -48,7 +48,9 @@ public class MovieDetailsFragmentTv extends DetailsSupportFragment {
     private FullWidthDetailsOverviewRowPresenter mFwdorPresenter;
     private SimpleBackgroundManager simpleBackgroundManager;
 
+    private String imdbId;
     private Result selectedMovie;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,8 @@ public class MovieDetailsFragmentTv extends DetailsSupportFragment {
 
         detailsRowBuilder(selectedMovie);
         simpleBackgroundManager.setBackground(Tmdb.BACKDROP_URL_1280 + selectedMovie.getBackdropPath());
+
+        mFwdorPresenter.setOnActionClickedListener(new ActionClickedListener());
 
         if(selectedMovie != null)
             fetchMovieDetails(selectedMovie.getId());
@@ -87,9 +91,9 @@ public class MovieDetailsFragmentTv extends DetailsSupportFragment {
                 });
 
         SparseArrayObjectAdapter actions = new SparseArrayObjectAdapter();
-        actions.set(0, new Action(707, "Watch Now"));
-//        actions.set(1, new Action(1, "Report Incorrect File"));
-//        actions.set(2, new Action(2, "Report No File"));
+        actions.set(0, new Action(9022, "Watch Now"));
+        actions.set(1, new Action(9023, "Report Incorrect or No Play"));
+        actions.set(2, new Action(9034, "Download"));
 
         detailsOverviewRow.setActionsAdapter(actions);
 
@@ -108,7 +112,7 @@ public class MovieDetailsFragmentTv extends DetailsSupportFragment {
             @Override
             public void onResponse(Call<MovieExternalIds> call, Response<MovieExternalIds> response) {
                 if(response.body() != null)
-                    setupActionListeners(mFwdorPresenter, response.body().getImdbId());
+                    imdbId = response.body().getImdbId();
             }
 
             @Override
@@ -119,20 +123,34 @@ public class MovieDetailsFragmentTv extends DetailsSupportFragment {
 
     }
 
-    private void setupActionListeners(FullWidthDetailsOverviewRowPresenter mFwdorPresenter, String imdbId) {
 
-        mFwdorPresenter.setOnActionClickedListener(new OnActionClickedListener() {
-            @Override
-            public void onActionClicked(Action action) {
-                if(action.getId() == (long)707){
+    private class ActionClickedListener implements OnActionClickedListener{
 
+        @Override
+        public void onActionClicked(Action action) {
+            switch ((int)action.getId()){
+
+                case 9022:
+                    if(imdbId == null){
+                        Util.showToast(getContext(),"Please Check Internet");
+                        return;
+                    }
                     Intent watch = new Intent(getActivity(), WatchActivity.class);
                     watch.putExtra("id", imdbId);
                     startActivity(watch);
+                    break;
 
-                }
+                case 9023:
+                    RetrofitSingleton.postReport(imdbId, 1, 0);
+                    Util.showToast(getContext(), "ThankYou");
+                    action.setId(System.currentTimeMillis());
+                    break;
+
+                case 9024:
+                    Util.showToast(getContext(), "Comming Soon! Stay tuned");
+                    break;
+
             }
-        });
-
+        }
     }
 }

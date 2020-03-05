@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -26,6 +27,7 @@ import com.mobile.bolly.models.MovieDetails;
 import com.mobile.bolly.models.Result;
 import com.mobile.bolly.networking.RetrofitSingleton;
 import com.mobile.bolly.util.ConnectivityChangeReceiver;
+import com.mobile.bolly.util.DownloadingForegroundService;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -45,6 +47,7 @@ public class MovieDetailActivity extends AppCompatActivity{
     private String RESPONSE = "response";
     MovieDetails details;
     ImageButton btnBack;
+    String imdb_id = null;
     ConnectivityChangeReceiver connectivityReceiver;
     final String [] months = new String[] { "", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
@@ -106,7 +109,10 @@ public class MovieDetailActivity extends AppCompatActivity{
         fabBookmark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make((CoordinatorLayout)btnBack.getParent(), "Comming Soon", Snackbar.LENGTH_SHORT).show();
+
+                Intent downloader = new Intent(MovieDetailActivity.this, DownloadingForegroundService.class);
+                downloader.putExtra("id", imdb_id);
+                ContextCompat.startForegroundService(MovieDetailActivity.this, downloader);
             }
         });
 
@@ -191,7 +197,7 @@ public class MovieDetailActivity extends AppCompatActivity{
                     populateResultData(tempResult);
                 }
 
-
+                imdb_id = response.body().getImdbId();
                 btnWatchNow.setOnClickListener(onWatchClick(response.body().getImdbId()));
             }
 

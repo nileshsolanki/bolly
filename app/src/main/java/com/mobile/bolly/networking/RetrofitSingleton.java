@@ -1,5 +1,10 @@
 package com.mobile.bolly.networking;
 
+import java.util.HashMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -52,6 +57,20 @@ public class RetrofitSingleton {
         }
 
         return updateService;
+    }
+
+
+    public static void postReport(String id, int reported, int played){
+        HashMap<String, Integer> body = new HashMap<>();
+        body.put("reported", reported);
+        body.put("played", played);
+        getBollyService().postReport(id, body).enqueue(new Callback<Object>() {
+            @Override
+            public void onResponse(Call<Object> call, Response<Object> response) { }
+
+            @Override
+            public void onFailure(Call<Object> call, Throwable t) { }
+        });
     }
 
 

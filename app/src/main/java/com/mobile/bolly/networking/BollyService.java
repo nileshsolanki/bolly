@@ -5,10 +5,13 @@ import com.mobile.bolly.models.MovieDetails;
 import com.mobile.bolly.models.Suggestion;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -29,4 +32,12 @@ public interface BollyService {
 
     @GET("/recent")
     Call<List<MovieDetails>> getRecents();
+
+
+    @POST ("/reports/{id}")
+    Call<Object> postReport(
+            @Path("id") String id,
+            @Body HashMap<String, Integer> body
+    );
+
 }

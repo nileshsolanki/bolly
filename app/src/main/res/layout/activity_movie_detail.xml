@@ -39,7 +39,7 @@
         app:layout_anchor="@id/bottom_sheet"
         app:layout_anchorGravity="end"
         android:layout_marginEnd="24dp"
-        android:src="@drawable/ic_bookmark" />
+        android:src="@drawable/ic_file_download" />
 
 
     <com.google.android.material.button.MaterialButton

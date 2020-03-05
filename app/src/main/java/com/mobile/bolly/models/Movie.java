@@ -24,6 +24,12 @@ public class Movie {
     @SerializedName("selectedTorrent")
     @Expose
     private SelectedTorrent selectedTorrent;
+    @SerializedName("played")
+    @Expose
+    private int played;
+    @SerializedName("reported")
+    @Expose
+    private int reported;
 
     public String getId() {
         return id;
@@ -73,4 +79,19 @@ public class Movie {
         this.selectedTorrent = selectedTorrent;
     }
 
+    public int getPlayed() {
+        return played;
+    }
+
+    public void setPlayed(int played) {
+        this.played = played;
+    }
+
+    public int getReported() {
+        return reported;
+    }
+
+    public void setReported(int reported) {
+        this.reported = reported;
+    }
 }

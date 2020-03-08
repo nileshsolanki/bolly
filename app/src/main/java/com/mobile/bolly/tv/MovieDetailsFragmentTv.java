@@ -9,6 +9,7 @@ import android.util.DisplayMetrics;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.DetailsSupportFragment;
 import androidx.leanback.widget.Action;
@@ -26,11 +27,13 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.mobile.bolly.MovieDetailActivity;
 import com.mobile.bolly.WatchActivity;
 import com.mobile.bolly.constants.Tmdb;
 import com.mobile.bolly.models.MovieExternalIds;
 import com.mobile.bolly.models.Result;
 import com.mobile.bolly.networking.RetrofitSingleton;
+import com.mobile.bolly.util.DownloadingForegroundService;
 import com.mobile.bolly.util.Util;
 
 import retrofit2.Call;
@@ -92,8 +95,8 @@ public class MovieDetailsFragmentTv extends DetailsSupportFragment {
 
         SparseArrayObjectAdapter actions = new SparseArrayObjectAdapter();
         actions.set(0, new Action(9022, "Watch Now"));
-        actions.set(1, new Action(9023, "Report Incorrect or No Play"));
-        actions.set(2, new Action(9034, "Download"));
+        actions.set(1, new Action(9023, "Download"));
+        actions.set(2, new Action(9024, "Report Incorrect or No Play"));
 
         detailsOverviewRow.setActionsAdapter(actions);
 
@@ -141,14 +144,18 @@ public class MovieDetailsFragmentTv extends DetailsSupportFragment {
                     break;
 
                 case 9023:
+                    Util.showToast(getContext(), "Starting Download");
+                    Intent downloader = new Intent(getContext(), DownloadingForegroundService.class);
+                    downloader.putExtra("id", imdbId);
+                    ContextCompat.startForegroundService(getContext(), downloader);
+                    break;
+
+                case 9024:
                     RetrofitSingleton.postReport(imdbId, 1, 0);
                     Util.showToast(getContext(), "ThankYou");
                     action.setId(System.currentTimeMillis());
                     break;
 
-                case 9024:
-                    Util.showToast(getContext(), "Comming Soon! Stay tuned");
-                    break;
 
             }
         }

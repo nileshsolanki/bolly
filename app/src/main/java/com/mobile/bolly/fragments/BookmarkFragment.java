@@ -35,8 +35,7 @@ import static com.mobile.bolly.util.Util.startMxPlayer;
 public class BookmarkFragment extends Fragment implements View.OnClickListener {
     View v;
     private String TAG = this.getClass().getSimpleName();
-    private static String title = null, progress = null;
-    private  long downloaded = 0, total = 0;
+    private static String title = null;
 
     MaterialCardView cvCurrentDownload;
     TextView tvMovieTitle, tvProgress, tvDownloadedVsTotal;
@@ -50,19 +49,17 @@ public class BookmarkFragment extends Fragment implements View.OnClickListener {
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().equals(DownloadingForegroundService.ACTION_STOP_DOWNLOAD)){
                 cvCurrentDownload.setVisibility(View.GONE);
+                adapter.updateTitle(null);
             }else if(intent.getAction().equals(DownloadingForegroundService.ACTION_DOWNLOAD_PROGRESS)) {
                 title = intent.getStringExtra("title");
-                progress = intent.getStringExtra("progress");
-                downloaded = intent.getLongExtra("downloadedBytes", 0);
-                total = intent.getLongExtra("totalBytes", 0);
-
-                Log.d(TAG, "title: " + title + " progress: " + progress);
-                adapter.updateTitle(title);
+                String progress = intent.getStringExtra("progress");
+                String downloadedVsTotal = intent.getStringExtra("downloadedVsTotal");
 
                 cvCurrentDownload.setVisibility(View.VISIBLE);
-                tvDownloadedVsTotal.setText(downloaded / (1024 * 1024) + "/" + total / (1024 * 1024) + " MB");
+                tvDownloadedVsTotal.setText(downloadedVsTotal);
                 tvMovieTitle.setText(title);
                 tvProgress.setText(progress + "%");
+                adapter.updateTitle(title);
             }
 
         }

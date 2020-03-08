@@ -35,16 +35,23 @@ import static com.mobile.bolly.util.Util.startMxPlayer;
 public class MovieSavedAdapter extends RecyclerView.Adapter<MovieSavedAdapter.MovieSavedHolder> {
 
     Context context;
-    List<String> savedMovies;
+    static List<String> savedMovies;
     String title;
 
     public MovieSavedAdapter(Context context, String title) {
         this.context = context;
-        searchSavedMovies();
         this.title = title;
+        savedMovies = searchSavedMovies(context, title);
     }
 
-    public void searchSavedMovies(){
+    public void updateTitle(String title){
+        this.title = title;
+        savedMovies = searchSavedMovies(context, title);
+        notifyDataSetChanged();
+    }
+
+
+    public static List<String> searchSavedMovies(Context context, String title){
         File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_MOVIES) + "");
         String []files = file.list(new FilenameFilter() {
             @Override
@@ -54,14 +61,9 @@ public class MovieSavedAdapter extends RecyclerView.Adapter<MovieSavedAdapter.Mo
                 return true;
             }
         });
-        savedMovies = Arrays.asList(files);
+        List<String> savedMovies = Arrays.asList(files);
+        return savedMovies;
 
-    }
-
-    public void updateTitle(String title){
-        this.title = title;
-        searchSavedMovies();
-        notifyDataSetChanged();
     }
 
     @NonNull
@@ -90,7 +92,7 @@ public class MovieSavedAdapter extends RecyclerView.Adapter<MovieSavedAdapter.Mo
                     Util.showToast(context, "Error deleting file");
                 }
 
-                searchSavedMovies();
+                searchSavedMovies(context, title);
                 notifyDataSetChanged();
 
             }

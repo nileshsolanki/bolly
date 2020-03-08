@@ -1,19 +1,29 @@
 package com.mobile.bolly.util;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.core.content.FileProvider;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.mobile.bolly.R;
 import com.mobile.bolly.WatchActivity;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * A collection of utility methods, all static.
@@ -112,23 +122,76 @@ public class Util {
             intent.setPackage(MX_AD);
             context.startActivity(intent);
         }else{
-            Snackbar.make(root, "MX Player required", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Install", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            try {
-                                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + MX_AD)));
-                            } catch (android.content.ActivityNotFoundException anfe) {
-                                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + MX_AD)));
+            if(root == null){
+                AlertDialog dialog = new AlertDialog.Builder(context, R.style.ThemeOverlay_AppCompat_Dialog)
+                        .setTitle("MX Player Required. Install Now?")
+                        .setItems(
+                                new String[]{"Yes", "No"},
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        switch (i){
+                                            case 0:
+                                                visitMxPlayerMarket(context);
+                                                break;
+
+                                            case 1:
+                                                dialogInterface.dismiss();
+                                        }
+                                    }
+                                }
+                        ).create();
+
+                dialog.getWindow().setGravity(Gravity.BOTTOM);
+                dialog.show();
+                dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            }else{
+                Snackbar.make(root, "MX Player required", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("Install", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                visitMxPlayerMarket(context);
                             }
-                        }
-                    })
-                    .setActionTextColor(context.getResources().getColor(R.color.colorAccentYellow)).show();
+                        })
+                        .setActionTextColor(context.getResources().getColor(R.color.colorAccentYellow)).show();
+            }
+
         }
 
 
 
+    }
 
 
+    private static void visitMxPlayerMarket(Context context){
+        final String MX_AD = "com.mxtech.videoplayer.ad";
+        try {
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + MX_AD)));
+        } catch (android.content.ActivityNotFoundException anfe) {
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + MX_AD)));
+        }
+    }
+
+
+
+    public static Uri getUriForFile(Context context, File file){
+
+        Uri fileUri;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            fileUri = FileProvider.getUriForFile(context, context.getOpPackageName() + ".provider", file);
+        else
+            fileUri = Uri.fromFile(file);
+
+        return fileUri;
+
+    }
+
+
+    public static void deleteFile(File file){
+        try {
+            file.getCanonicalFile().delete();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

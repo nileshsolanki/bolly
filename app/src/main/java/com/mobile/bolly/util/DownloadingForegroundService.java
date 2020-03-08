@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -48,6 +49,8 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -67,10 +70,12 @@ public class DownloadingForegroundService extends Service implements TorrentServ
     Notification notification = null;
     NotificationCompat.Builder notificationBuilder = null;
 
-    private String movieTitle = "";
+    private String movieTitle = "", progressPercent = "0";
     private long downloadedBytes = 0, totalBytes = 0;
 
     private TorrentStreamServer torrentStreamServer;
+
+    Timer timer;
 
 
     @Override
@@ -111,6 +116,24 @@ public class DownloadingForegroundService extends Service implements TorrentServ
                 stopForeground(true);
                 stopSelf();
             }
+
+
+            timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+
+                    sendMessage();
+
+
+                    int progress = Integer.parseInt(progressPercent);
+                    if (progress == 100) return;
+                    Notification notification = getNotification(movieTitle, progress);
+                    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    manager.notify(1, notification);
+
+                }
+            },150, 5000);
 
         }
 
@@ -235,6 +258,9 @@ public class DownloadingForegroundService extends Service implements TorrentServ
         releaseTorrentStream();
         if(messenger != null)
             unregisterReceiver(messenger);
+
+        if(timer != null)
+            timer.cancel();
     }
 
     private void createNotificationChannel() {
@@ -333,13 +359,12 @@ public class DownloadingForegroundService extends Service implements TorrentServ
 
 
 
-    private void sendMessage(String progress) {
+    private void sendMessage() {
         Intent intent = new Intent().setAction(ACTION_DOWNLOAD_PROGRESS);
-
         intent.putExtra("title", movieTitle);
-        intent.putExtra("downloadedBytes", downloadedBytes);
-        intent.putExtra("totalBytes", totalBytes);
-        intent.putExtra("progress", progress);
+        intent.putExtra("progress", progressPercent);
+        String downloadedVsTotal = downloadedBytes / (1024 * 1024) + "/" + totalBytes / (1024 * 1024) + " MB";
+        intent.putExtra("downloadedVsTotal", downloadedVsTotal);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
@@ -417,20 +442,14 @@ public class DownloadingForegroundService extends Service implements TorrentServ
                 int oldProgress = 0;
                 while ((count = input.read(data)) != -1) {
                     total += count;
-                    // publishing the progress....
-                    // After this onProgressUpdate will be called
 
                     downloadedBytes = total;
                     int progress = (int) ((total * 100) / lenghtOfFile);
-                    //send repeated progress. so that ui reacts fast
-                    if(System.currentTimeMillis() - lastMessage >= 1500){
-                        sendMessage(progress + "");
-                        lastMessage = System.currentTimeMillis();
-                    }
+
                     if (oldProgress != progress) {
                         Log.d("PROGRESS", progress + "");
                         oldProgress = progress;
-                        publishProgress(progress + "");
+                        progressPercent = progress + "";
 
                     }
 
@@ -460,23 +479,10 @@ public class DownloadingForegroundService extends Service implements TorrentServ
 
         }
 
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-
-            int progress = Integer.parseInt(values[0]);
-
-
-            if (progress == 100) return;
-            Notification notification = getNotification(movieTitle, progress);
-            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            manager.notify(1, notification);
-        }
-
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(ACTION_STOP_DOWNLOAD));
             stopForeground(true);
             stopSelf();
         }

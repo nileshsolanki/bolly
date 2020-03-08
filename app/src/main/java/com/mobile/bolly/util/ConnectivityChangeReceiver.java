@@ -35,8 +35,12 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
     }
 
     private void showDialog(){
-        if(dialog != null && !dialog.isVisible()) {
-            removeDialog(); //to remove any existing dialogs and then create new
+        if(dialog != null /*&& !dialog.isVisible()*/) {
+            //removeDialog(); //to remove any existing dialogs and then create new
+            if(dialog.isAdded()){
+                manager.beginTransaction().show(dialog);
+                return;
+            }
             manager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).add(android.R.id.content, dialog, "dialog").addToBackStack("stack").commit();
         }
     }

@@ -133,14 +133,6 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
-        }
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_watch);
@@ -160,9 +152,9 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
 
         //setUiConfigurations();
 
-        Glide.with(WatchActivity.this)
-                .load(R.drawable.popcorn_comming)
-                .into(ivLoading);
+        Glide.with(WatchActivity.this).load(R.drawable.popcorn_comming).into(ivLoading);
+
+
         String id = getIntent().getStringExtra("id");
         if(id != null){
             this.id = id;
@@ -434,73 +426,4 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
         Log.d(TORRENT, "onStreamStopped");
     }
 
-
-
-
-
-
-    private class Downloader extends AsyncTask<String, String, String>{
-
-        @Override
-        protected String doInBackground(String... strings) {
-            String url = strings[0];
-            Torrent torrent = torrentStreamServer.getCurrentTorrent();
-
-
-            long lenghtOfFile = torrent.getVideoFile().length();
-            Log.d("FILE LENGTH", lenghtOfFile + " bytes");
-            byte [] data = new byte[1024];
-            long  total = 0;
-            int count;
-            InputStream input = null;
-            OutputStream output = null;
-            String filepath = torrent.getVideoFile().getAbsolutePath();
-            try {
-                String extension =  filepath.substring(filepath.lastIndexOf("."));
-                URL mUrl = new URL(url);
-                URLConnection connection = mUrl.openConnection();
-                connection.connect();
-
-                input = new BufferedInputStream(mUrl.openStream(), 8192);
-
-
-                output = new FileOutputStream(getExternalFilesDir(Environment.DIRECTORY_MOVIES) + "/movie" + extension);
-                int oldProgress = 0;
-                while ((count = input.read(data)) != -1) {
-                    total += count;
-                    // publishing the progress....
-                    // After this onProgressUpdate will be called
-
-                    int progress = (int) ((total * 100) / lenghtOfFile);
-                    if(oldProgress != progress){
-                        Log.d("PROGRESS", progress + "");
-                        oldProgress = progress;
-                    }
-
-
-                    // writing data to file
-                    output.write(data, 0, count);
-                }
-
-                // flushing output
-                output.flush();
-
-                // closing streams
-                output.close();
-                input.close();
-
-
-
-
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-
-        }
-    }
 }

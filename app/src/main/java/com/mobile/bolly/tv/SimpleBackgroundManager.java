@@ -22,6 +22,7 @@ public class SimpleBackgroundManager {
     Activity activity;
     BackgroundManager backgroundManager = null;
     DisplayMetrics displayMetrics;
+    static long lastUpdate = 0;
 
     public SimpleBackgroundManager(Activity activity) {
         this.activity = activity;
@@ -44,6 +45,11 @@ public class SimpleBackgroundManager {
 
         if(backgroundManager == null)
             return;
+
+        if(System.currentTimeMillis() - lastUpdate <= 3000){
+            lastUpdate = System.currentTimeMillis();
+            return;
+        }
 
         Glide.with(activity)
                 .load(url)

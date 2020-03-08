@@ -1,16 +1,20 @@
 package com.mobile.bolly.tv;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
+import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
+import android.os.Environment;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.WindowManager;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.leanback.app.BackgroundManager;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 import androidx.leanback.app.BrowseSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.HeaderItem;
@@ -21,23 +25,72 @@ import androidx.leanback.widget.OnItemViewSelectedListener;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.mobile.bolly.R;
 import com.mobile.bolly.constants.Tmdb;
 import com.mobile.bolly.models.Result;
+import com.mobile.bolly.util.DownloadingForegroundService;
 
+import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.mobile.bolly.util.DownloadingForegroundService.ACTION_STOP_DOWNLOAD;
+import static com.mobile.bolly.util.Util.startMxPlayer;
 
 public class MainFragmentTv extends BrowseSupportFragment {
 
+    private String TAG = getClass().getSimpleName();
     public static final String BACKDROP_URL_1280 = "https://image.tmdb.org/t/p/w1280";
 
     ArrayObjectAdapter allCategoryRows;
     SimpleBackgroundManager simpleBackgroundManager;
+
+    DownloadedItemPresenter downloadedItemPresenter;
+    DownloadingItemPresenter downloadingItemPresenter;
+
+
+    BroadcastReceiver progressReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if(intent.getAction().equals(ACTION_STOP_DOWNLOAD)){
+
+                if(downloadedItemPresenter != null) {
+                    downloadedItemPresenter.updateTitle(null);
+                    downloadingItemPresenter.updateProgress(null, null, null);
+                }
+
+            }else if(intent.getAction().equals(DownloadingForegroundService.ACTION_DOWNLOAD_PROGRESS)) {
+                String title = intent.getStringExtra("title");
+                String progress = intent.getStringExtra("progress");
+                String bytesString = intent.getStringExtra("downloadedVsTotal");
+
+                Log.d(TAG, "title: " + title + " progress: " + progress);
+                if(downloadedItemPresenter != null && downloadingItemPresenter != null) {
+                    downloadedItemPresenter.updateTitle(title);
+                    downloadingItemPresenter.updateProgress(title, progress, bytesString);
+                }
+
+
+            }
+
+        }
+    };
+
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(DownloadingForegroundService.ACTION_DOWNLOAD_PROGRESS);
+        filter.addAction(ACTION_STOP_DOWNLOAD);
+
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(progressReceiver, filter);
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -47,6 +100,9 @@ public class MainFragmentTv extends BrowseSupportFragment {
         loadRows();
         setupEventListeners();
         simpleBackgroundManager = new SimpleBackgroundManager(getActivity());
+        downloadedItemPresenter = new DownloadedItemPresenter(getContext());
+        downloadingItemPresenter = new DownloadingItemPresenter(getContext());
+
 
     }
 
@@ -64,12 +120,16 @@ public class MainFragmentTv extends BrowseSupportFragment {
         HeaderItem topRatedHeader = new HeaderItem(1, "Top Rated");
         HeaderItem genreHeader = new HeaderItem(2, "Hot Genres");
         HeaderItem yearHeader = new HeaderItem(3, "Year");
+        HeaderItem downloadedHeader = new HeaderItem(4, "Saved");
+        HeaderItem downloadingHeader = new HeaderItem(5, "Downloading");
 
         //row adapters
         ArrayObjectAdapter recentMoviesRowAdapter = MovieCardPresenter.getRecentMoviesRowAdapter(getContext());
         ArrayObjectAdapter topRatedMoviesRowAdapter = MovieCardPresenter.getTopRatedMoviesRowAdapter(getContext());
         ArrayObjectAdapter genreRowAdapter = GenreItemPresenter.getGenreRowAdapter(getContext());
         ArrayObjectAdapter yearRowAdapter = YearItemPresenter.getYearRowAdapter(getContext());
+        ArrayObjectAdapter downloadedRowAdaper = DownloadedItemPresenter.getDownloadedRowAdapter(getContext());
+        ArrayObjectAdapter downloadingRowAdapter = DownloadingItemPresenter.getDownloadingRowAdapter(getContext());
 
 
         //adding all rows
@@ -77,13 +137,15 @@ public class MainFragmentTv extends BrowseSupportFragment {
         allCategoryRows.add(new ListRow(topRatedHeader, topRatedMoviesRowAdapter));
         allCategoryRows.add(new ListRow(genreHeader, genreRowAdapter));
         allCategoryRows.add(new ListRow(yearHeader, yearRowAdapter));
+        allCategoryRows.add(new ListRow(downloadedHeader, downloadedRowAdaper));
+        allCategoryRows.add(new ListRow(downloadingHeader, downloadingRowAdapter));
         setAdapter(allCategoryRows);
 
     }
 
 
     private void setupUIElements() {
-         setBadgeDrawable(getActivity().getResources().getDrawable(R.drawable.logo));
+         setBadgeDrawable(getActivity().getResources().getDrawable(R.drawable.logo_white));
         //setTitle("bolly"); // Badge, when set, takes precedent
         // over title
         setHeadersState(HEADERS_ENABLED);
@@ -146,6 +208,33 @@ public class MainFragmentTv extends BrowseSupportFragment {
                     startActivity(yearGrid);
                     break;
 
+
+                case 4:
+                    //saved movies
+                    if(((String)item).equals("Your downloaded files will appear here"))
+                        return;
+                    AlertDialog savedActions = downloadedItemPresenter.getSavedActionsAsAlert(getContext(), item);
+                    savedActions.getWindow().setGravity(Gravity.BOTTOM);
+                    savedActions.show();
+                    savedActions.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+
+                    break;
+
+
+                case 5:
+                    //downloading
+
+                    HashMap<String, String> progressVar = (HashMap<String, String>)item;
+                    String progress = progressVar.get("progress");
+                    if((progress == null || progress.isEmpty()))
+                        return;
+                    AlertDialog downloadingActions = downloadingItemPresenter.getDownloadingActionsAsAlert(getContext());
+                    downloadingActions.getWindow().setGravity(Gravity.BOTTOM);
+                    downloadingActions.show();
+                    downloadingActions.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+
+
+                    break;
             }
         }
     }
@@ -163,5 +252,12 @@ public class MainFragmentTv extends BrowseSupportFragment {
                 simpleBackgroundManager.setBackground(BACKDROP_URL_1280 + ((Result)item).getBackdropPath());
             }
         }
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(progressReceiver);
     }
 }

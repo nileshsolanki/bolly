@@ -9,20 +9,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.FileProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.github.se_bastiaan.torrentstream.StreamStatus;
@@ -31,10 +26,9 @@ import com.github.se_bastiaan.torrentstream.TorrentOptions;
 import com.github.se_bastiaan.torrentstreamserver.TorrentServerListener;
 import com.github.se_bastiaan.torrentstreamserver.TorrentStreamNotInitializedException;
 import com.github.se_bastiaan.torrentstreamserver.TorrentStreamServer;
-import com.google.android.material.snackbar.Snackbar;
 import com.mobile.bolly.MainActivity;
 import com.mobile.bolly.R;
-import com.mobile.bolly.WatchActivity;
+import com.mobile.bolly.constants.TSSConfig;
 import com.mobile.bolly.models.Movie;
 import com.mobile.bolly.networking.RetrofitSingleton;
 
@@ -64,15 +58,18 @@ public class DownloadingForegroundService extends Service implements TorrentServ
     public static final String CHANNEL_ID = "ForegroundServiceChannel";
     public static final String ACTION_DOWNLOAD_PROGRESS = "download-progress";
     public static final String ACTION_STOP_DOWNLOAD = "stop-download";
+    public static final String ACTION_COMPLETE_DOWNLOAD = "finish-download";
     private static final String TORRENT = "DownloadForeground";
     private Messenger messenger;
     private Downloader downloader;
     Notification notification = null;
     NotificationCompat.Builder notificationBuilder = null;
 
-    private String movieTitle = "", progressPercent = "0";
+    private String movieTitle = "<Please Wait>", progressPercent = "0";
     private long downloadedBytes = 0, totalBytes = 0;
 
+
+    Intent stop = new Intent(ACTION_STOP_DOWNLOAD);
     private TorrentStreamServer torrentStreamServer;
 
     Timer timer;
@@ -103,18 +100,20 @@ public class DownloadingForegroundService extends Service implements TorrentServ
 
             Util.showToast(this, "Starting download process...");
             isRunning = !isRunning;
-            String id = intent.getStringExtra("id");
+            notification = getNotification("<Please wait>", 0);
+            startForeground(1, notification);
+            TSSConfig.setDownloading();
+            int id = intent.getIntExtra("id", 0);
             downloader = new Downloader();
 
 
-            if (id != null) {
+            if (id != 0) {
                 setUpTorrentStream();
                 fetchTorrent(id);
 
             } else {
                 Util.showToast(getApplicationContext(), "Not yet available! Stay tuned");
-                stopForeground(true);
-                stopSelf();
+                sendBroadcast(stop);
             }
 
 
@@ -143,7 +142,7 @@ public class DownloadingForegroundService extends Service implements TorrentServ
     }
 
 
-    private void fetchTorrent(String id){
+    private void fetchTorrent(int id){
         Log.d(TORRENT, "fetching for id "+ id);
         RetrofitSingleton.getBollyService().getMovieDetails(id).enqueue(new retrofit2.Callback<Movie>() {
             @Override
@@ -151,19 +150,14 @@ public class DownloadingForegroundService extends Service implements TorrentServ
 
                 if(response.body() == null){
                     Util.showToast(getApplicationContext(), "Not yet available! Stay tuned");
-                    stopForeground(true);
-                    stopSelf();
+                    sendBroadcast(stop);
                     return;
                 }
-
 
 
                 Log.d(TORRENT, response.body().getSelectedTorrent().getTitle());
                 String magnet = response.body().getSelectedTorrent().getMagnet();
                 movieTitle = response.body().getTitle();
-                Notification notification = getNotification(movieTitle, 0);
-                startForeground(1, notification);
-
 
 
                 try {
@@ -211,6 +205,7 @@ public class DownloadingForegroundService extends Service implements TorrentServ
 
         }
         return notificationBuilder
+                .setContentTitle(title)
                 .setProgress(100, progress, false)
                 .setContentText(progress + "% | (" + downloaded + "/" + total + " MB)").build();
 
@@ -287,44 +282,41 @@ public class DownloadingForegroundService extends Service implements TorrentServ
     public void onServerReady(String url) {
 
         Torrent torrent = torrentStreamServer.getCurrentTorrent();
-        String size = torrent.getVideoFile().length() + "";
-        String path = torrent.getVideoFile().getAbsolutePath();
+        if(torrent != null) {
+            String size = torrent.getVideoFile().length() + "";
+            String path = torrent.getVideoFile().getAbsolutePath();
+
+            if (torrent.getVideoFile().length() >= torrent.getSaveLocation().getUsableSpace()) {
+
+                Util.showToast(getApplicationContext(), "Not enough space on disk. Aborting...");
+                sendBroadcast(stop);
+                return;
+            }
 
 
-        //start downloading
-        downloader.execute(url, size, path);
-
-    }
-
-    @Override
-    public void onStreamPrepared(Torrent torrent) {
-
-    }
-
-    @Override
-    public void onStreamStarted(Torrent torrent) {
-
-    }
-
-    @Override
-    public void onStreamError(Torrent torrent, Exception e) {
+            //start downloading
+            downloader.execute(url, size, path);
+        }
 
     }
 
     @Override
-    public void onStreamReady(Torrent torrent) {
-
-    }
+    public void onStreamPrepared(Torrent torrent) { }
 
     @Override
-    public void onStreamProgress(Torrent torrent, StreamStatus status) {
-
-    }
+    public void onStreamStarted(Torrent torrent) { }
 
     @Override
-    public void onStreamStopped() {
+    public void onStreamError(Torrent torrent, Exception e) { }
 
-    }
+    @Override
+    public void onStreamReady(Torrent torrent) { }
+
+    @Override
+    public void onStreamProgress(Torrent torrent, StreamStatus status) { }
+
+    @Override
+    public void onStreamStopped() { }
 
     //=============================================================
     //=========================================================
@@ -381,16 +373,31 @@ public class DownloadingForegroundService extends Service implements TorrentServ
                 case ACTION_STOP_DOWNLOAD:
                     LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(ACTION_STOP_DOWNLOAD));
                     stopBackgroundDownload();
-                    String filepath = torrentStreamServer.getCurrentTorrent().getVideoFile().getAbsolutePath();
-                    String extension = filepath.substring(filepath.lastIndexOf("."));
+                    if(torrentStreamServer != null
+                            && torrentStreamServer.getCurrentTorrent() != null
+                            && torrentStreamServer.getCurrentTorrent().getVideoFile() != null) {
+                        String filepath = torrentStreamServer.getCurrentTorrent().getVideoFile().getAbsolutePath();
+                        String extension = filepath.substring(filepath.lastIndexOf("."));
 
-                    File file = new File(getExternalFilesDir(Environment.DIRECTORY_MOVIES) + "/"+ movieTitle + extension);
+                        File file = new File(getExternalFilesDir(Environment.DIRECTORY_MOVIES) + "/" + movieTitle + extension);
 
-                    try {
-                        file.getCanonicalFile().delete();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        try {
+                            file.getCanonicalFile().delete();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
+                    releaseTorrentStream();
+                    TSSConfig.resetDownloading();
+                    stopForeground(true);
+                    stopSelf();
+                    break;
+
+
+
+                case ACTION_COMPLETE_DOWNLOAD:
+                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(ACTION_COMPLETE_DOWNLOAD));
+                    TSSConfig.resetDownloading();
                     releaseTorrentStream();
                     stopForeground(true);
                     stopSelf();
@@ -471,8 +478,7 @@ public class DownloadingForegroundService extends Service implements TorrentServ
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                stopForeground(true);
-                stopSelf();
+                sendBroadcast(stop);
             }
 
             return null;
@@ -482,9 +488,7 @@ public class DownloadingForegroundService extends Service implements TorrentServ
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(ACTION_STOP_DOWNLOAD));
-            stopForeground(true);
-            stopSelf();
+            sendBroadcast(new Intent(ACTION_COMPLETE_DOWNLOAD));
         }
 
 

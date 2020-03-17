@@ -1,46 +1,30 @@
 package com.mobile.bolly.tv;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.DetailsSupportFragment;
 import androidx.leanback.widget.Action;
 import androidx.leanback.widget.ArrayObjectAdapter;
-import androidx.leanback.widget.ClassPresenterSelector;
 import androidx.leanback.widget.DetailsOverviewRow;
 import androidx.leanback.widget.FullWidthDetailsOverviewRowPresenter;
-import androidx.leanback.widget.HeaderItem;
-import androidx.leanback.widget.ListRow;
-import androidx.leanback.widget.ListRowPresenter;
 import androidx.leanback.widget.OnActionClickedListener;
 import androidx.leanback.widget.SparseArrayObjectAdapter;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.mobile.bolly.MovieDetailActivity;
 import com.mobile.bolly.WatchActivity;
 import com.mobile.bolly.constants.Tmdb;
-import com.mobile.bolly.models.MovieExternalIds;
 import com.mobile.bolly.models.Result;
 import com.mobile.bolly.networking.RetrofitSingleton;
 import com.mobile.bolly.util.DownloadingForegroundService;
 import com.mobile.bolly.util.Util;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static com.mobile.bolly.constants.Tmdb.APIKEY;
 
 public class MovieDetailsFragmentTv extends DetailsSupportFragment {
 
@@ -51,7 +35,6 @@ public class MovieDetailsFragmentTv extends DetailsSupportFragment {
     private FullWidthDetailsOverviewRowPresenter mFwdorPresenter;
     private SimpleBackgroundManager simpleBackgroundManager;
 
-    private String imdbId;
     private Result selectedMovie;
 
 
@@ -67,9 +50,6 @@ public class MovieDetailsFragmentTv extends DetailsSupportFragment {
         simpleBackgroundManager.setBackground(Tmdb.BACKDROP_URL_1280 + selectedMovie.getBackdropPath());
 
         mFwdorPresenter.setOnActionClickedListener(new ActionClickedListener());
-
-        if(selectedMovie != null)
-            fetchMovieDetails(selectedMovie.getId());
 
     }
 
@@ -109,24 +89,6 @@ public class MovieDetailsFragmentTv extends DetailsSupportFragment {
     }
 
 
-    private void fetchMovieDetails(Integer tmdbId) {
-
-        RetrofitSingleton.getTmdbService().externalIds(tmdbId, APIKEY).enqueue(new Callback<MovieExternalIds>() {
-            @Override
-            public void onResponse(Call<MovieExternalIds> call, Response<MovieExternalIds> response) {
-                if(response.body() != null)
-                    imdbId = response.body().getImdbId();
-            }
-
-            @Override
-            public void onFailure(Call<MovieExternalIds> call, Throwable t) {
-
-            }
-        });
-
-    }
-
-
     private class ActionClickedListener implements OnActionClickedListener{
 
         @Override
@@ -134,24 +96,24 @@ public class MovieDetailsFragmentTv extends DetailsSupportFragment {
             switch ((int)action.getId()){
 
                 case 9022:
-                    if(imdbId == null){
+                    if(selectedMovie == null){
                         Util.showToast(getContext(),"Please Check Internet");
                         return;
                     }
                     Intent watch = new Intent(getActivity(), WatchActivity.class);
-                    watch.putExtra("id", imdbId);
+                    watch.putExtra("id", selectedMovie.getId());
                     startActivity(watch);
                     break;
 
                 case 9023:
                     Util.showToast(getContext(), "Starting Download");
                     Intent downloader = new Intent(getContext(), DownloadingForegroundService.class);
-                    downloader.putExtra("id", imdbId);
+                    downloader.putExtra("id", selectedMovie.getId());
                     ContextCompat.startForegroundService(getContext(), downloader);
                     break;
 
                 case 9024:
-                    RetrofitSingleton.postReport(imdbId, 1, 0);
+                    RetrofitSingleton.postReport(selectedMovie.getId(), 1, 0);
                     Util.showToast(getContext(), "ThankYou");
                     action.setId(System.currentTimeMillis());
                     break;

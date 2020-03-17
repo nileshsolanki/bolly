@@ -2,9 +2,9 @@ package com.mobile.bolly.networking;
 
 import com.mobile.bolly.models.Movie;
 import com.mobile.bolly.models.MovieDetails;
+import com.mobile.bolly.models.Result;
 import com.mobile.bolly.models.Suggestion;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,7 +20,7 @@ public interface BollyService {
 
     @GET ("/{id}")
     Call<Movie> getMovieDetails(
-            @Path("id") String id
+            @Path("id") int id
     );
 
 
@@ -30,14 +30,25 @@ public interface BollyService {
     );
 
 
-    @GET("/recent")
-    Call<List<MovieDetails>> getRecents();
 
 
     @POST ("/reports/{id}")
     Call<Object> postReport(
-            @Path("id") String id,
+            @Path("id") int id,
             @Body HashMap<String, Integer> body
     );
+
+
+    @GET("/recent")
+    Call<List<MovieDetails>> getRecents();
+
+    @GET ("/toprated")
+    Call<List<Result>> getTopRated();
+
+    @GET ("/year/{year}")
+    Call<List<Result>> getForYear(@Path("year") int year);
+
+    @GET ("/genre/{genre}")
+    Call<List<Result>> getForGenre(@Path("genre") int genre);
 
 }

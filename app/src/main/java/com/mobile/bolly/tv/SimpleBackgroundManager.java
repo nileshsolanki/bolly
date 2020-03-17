@@ -1,7 +1,8 @@
 package com.mobile.bolly.tv;
 
 import android.app.Activity;
-import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -22,7 +23,8 @@ public class SimpleBackgroundManager {
     Activity activity;
     BackgroundManager backgroundManager = null;
     DisplayMetrics displayMetrics;
-    static long lastUpdate = 0;
+
+    ColorDrawable color;
 
     public SimpleBackgroundManager(Activity activity) {
         this.activity = activity;
@@ -30,6 +32,8 @@ public class SimpleBackgroundManager {
         backgroundManager.attach(activity.getWindow());
         displayMetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        color = new ColorDrawable(activity.getResources().getColor(R.color.darken_transparent));
+
     }
 
 
@@ -46,20 +50,23 @@ public class SimpleBackgroundManager {
         if(backgroundManager == null)
             return;
 
-        if(System.currentTimeMillis() - lastUpdate <= 3000){
-            lastUpdate = System.currentTimeMillis();
-            return;
-        }
-
         Glide.with(activity)
                 .load(url)
                 .apply(new RequestOptions().override(displayMetrics.widthPixels, displayMetrics.heightPixels).centerCrop())
                 .into(new CustomTarget<Drawable>() {
                     @Override
                     public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                        ColorDrawable color = new ColorDrawable(activity.getResources().getColor(R.color.darken_transparent));
                         LayerDrawable layers = new LayerDrawable(new Drawable[]{resource, color});
-                        backgroundManager.setDrawable(layers);
+
+
+                        final int width = layers.getIntrinsicWidth();
+                        final int height = layers.getIntrinsicHeight();
+
+                        final Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                        layers.setBounds(0, 0, width, height);
+                        layers.draw(new Canvas(bitmap));
+
+                        backgroundManager.setBitmap(bitmap);
                     }
 
                     @Override

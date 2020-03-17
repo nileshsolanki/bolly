@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.leanback.widget.ArrayObjectAdapter;
-import androidx.leanback.widget.BaseCardView;
 import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.Presenter;
 
@@ -17,9 +16,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.mobile.bolly.R;
 import com.mobile.bolly.constants.Tmdb;
-import com.mobile.bolly.models.Movie;
 import com.mobile.bolly.models.MovieDetails;
-import com.mobile.bolly.models.MovieExternalIds;
 import com.mobile.bolly.models.MovieTopRated;
 import com.mobile.bolly.models.Result;
 import com.mobile.bolly.networking.BollyService;
@@ -138,10 +135,7 @@ public class MovieCardPresenter extends Presenter {
         MovieCardPresenter movieCardPresenter = new MovieCardPresenter();
         ArrayObjectAdapter topRatedMovieRowAdapter = new ArrayObjectAdapter(movieCardPresenter);
 
-        Result emptyResult = new Result();
-        emptyResult.setTitle("Loading...");
-        topRatedMovieRowAdapter.add(emptyResult);
-        fetchTopRated(new SharedPrefHelper(context.getApplicationContext()), topRatedMovieRowAdapter);
+        fetchTopRated(context, new SharedPrefHelper(context.getApplicationContext()), topRatedMovieRowAdapter);
 
         return topRatedMovieRowAdapter;
 
@@ -187,50 +181,28 @@ public class MovieCardPresenter extends Presenter {
 
 
 
-    private static void fetchTopRated(SharedPrefHelper sph, ArrayObjectAdapter topRatedMoviesRowAdapter) {
+    private static void fetchTopRated(Context context, SharedPrefHelper sph, ArrayObjectAdapter topRatedMoviesRowAdapter) {
         TmdbService service = RetrofitSingleton.getTmdbService();
         service.topRated(APIKEY, "hi", "IN", 1).enqueue(new Callback<MovieTopRated>() {
             @Override
             public void onResponse(Call<MovieTopRated> call, Response<MovieTopRated> response) {
-
+                topRatedMoviesRowAdapter.clear();
                 for(Result result : response.body().getResults()){
-                    if(Integer.parseInt(result.getReleaseDate().split("-")[0])>= 2000) {
-                        RetrofitSingleton.getTmdbService().externalIds(result.getId(), APIKEY).enqueue(new Callback<MovieExternalIds>() {
-                            @Override
-                            public void onResponse(Call<MovieExternalIds> call, Response<MovieExternalIds> response) {
-                                if(response.body() != null){
-                                    topRatedMoviesRowAdapter.clear();
-                                    RetrofitSingleton.getBollyService().getMovieDetails(response.body().getImdbId()).enqueue(new Callback<Movie>() {
-                                        @Override
-                                        public void onResponse(Call<Movie> call, Response<Movie> response) {
-                                            if(response.body() != null){
-                                                topRatedMoviesRowAdapter.add(result);
-                                                //sph.putSearchResults(SharedPrefHelper.TYPE_TOPRATED, ratedMovies);
-                                                //sph.putFetchTimeStamp(System.currentTimeMillis());
-                                            }
-                                        }
+                    if(Integer.parseInt(result.getReleaseDate().split("-")[0])>= 2011) {
 
-                                        @Override
-                                        public void onFailure(Call<Movie> call, Throwable t) {
-
-                                        }
-                                    });
-
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<MovieExternalIds> call, Throwable t) {
-
-                            }
-                        });
-
-
+                        topRatedMoviesRowAdapter.add(result);
+                        //sph.putSearchResults(SharedPrefHelper.TYPE_TOPRATED, ratedMovies);
+                        //sph.putFetchTimeStamp(System.currentTimeMillis());
                     }
 
                 }
 
 
+                if(topRatedMoviesRowAdapter.size() == 0){
+                    Result emptyResult = new Result();
+                    emptyResult.setTitle("Loading...");
+                    topRatedMoviesRowAdapter.add(emptyResult);
+                }
 
             }
 
@@ -239,5 +211,8 @@ public class MovieCardPresenter extends Presenter {
 
             }
         });
+
+
+
     }
 }

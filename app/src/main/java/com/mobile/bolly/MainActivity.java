@@ -13,20 +13,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.mobile.bolly.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.mobile.bolly.fragments.BookmarkFragment;
 import com.mobile.bolly.fragments.HomeFragment;
 import com.mobile.bolly.fragments.InfoFragment;
-import com.mobile.bolly.fragments.UpdateFragment;
-import com.mobile.bolly.models.UpdateLog;
-import com.mobile.bolly.networking.RetrofitSingleton;
 import com.mobile.bolly.util.ConnectivityChangeReceiver;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static com.mobile.bolly.util.Common.checkUpdate;
 import static com.mobile.bolly.util.Common.fullScreen;

@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,6 @@ import com.mobile.bolly.adapter.MovieSavedAdapter;
 import com.mobile.bolly.util.DownloadingForegroundService;
 
 import java.io.File;
-import java.util.Arrays;
 
 import static com.mobile.bolly.util.Util.startMxPlayer;
 
@@ -60,6 +58,11 @@ public class BookmarkFragment extends Fragment implements View.OnClickListener {
                 tvMovieTitle.setText(title);
                 tvProgress.setText(progress + "%");
                 adapter.updateTitle(title);
+            }else if(intent.getAction().equals(DownloadingForegroundService.ACTION_COMPLETE_DOWNLOAD)){
+
+                cvCurrentDownload.setVisibility(View.GONE);
+                adapter.updateTitle(null);
+
             }
 
         }

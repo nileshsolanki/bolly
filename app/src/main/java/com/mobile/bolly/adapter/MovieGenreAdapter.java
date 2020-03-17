@@ -12,8 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.mobile.bolly.R;
 import com.mobile.bolly.MovieGridActivity;
+import com.mobile.bolly.R;
 
 import static com.mobile.bolly.constants.Tmdb.genreDrawables;
 import static com.mobile.bolly.constants.Tmdb.genreIds;

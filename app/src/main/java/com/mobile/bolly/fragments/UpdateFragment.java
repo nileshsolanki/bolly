@@ -20,9 +20,9 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
-import com.mobile.bolly.R;
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
+import com.mobile.bolly.R;
 
 import java.io.BufferedInputStream;
 import java.io.File;

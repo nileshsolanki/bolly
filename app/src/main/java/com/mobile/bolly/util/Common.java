@@ -1,10 +1,8 @@
 package com.mobile.bolly.util;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -16,12 +14,6 @@ import com.mobile.bolly.fragments.UpdateFragment;
 import com.mobile.bolly.models.UpdateLog;
 import com.mobile.bolly.networking.RetrofitSingleton;
 import com.mobile.bolly.tv.UpdateActivityTv;
-
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.Arrays;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,7 +60,7 @@ public class Common {
                         fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                                 .add(android.R.id.content, updateFragment, "update")
                                 .addToBackStack("stack")
-                                .commit();
+                                .commitAllowingStateLoss();
 
                     }
 

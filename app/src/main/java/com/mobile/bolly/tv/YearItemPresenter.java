@@ -48,7 +48,7 @@ class YearItemPresenter extends Presenter {
 
         YearItemPresenter yearItemPresenter = new YearItemPresenter(context);
         ArrayObjectAdapter yearRowAdapter = new ArrayObjectAdapter(yearItemPresenter);
-        for(int i = 2020; i >= 2000; i--){
+        for(int i = 2020; i >= 2011; i--){
             yearRowAdapter.add( (i + "") );
         }
 

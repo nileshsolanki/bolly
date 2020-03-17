@@ -3,7 +3,6 @@ package com.mobile.bolly.tv;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Environment;
 import android.view.Gravity;
 import android.view.View;
@@ -12,7 +11,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.FileProvider;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.Presenter;
 
@@ -21,7 +19,6 @@ import com.mobile.bolly.util.Util;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Map;
 
 import static com.mobile.bolly.util.DownloadingForegroundService.ACTION_STOP_DOWNLOAD;
 import static com.mobile.bolly.util.Util.startMxPlayer;
@@ -31,7 +28,7 @@ public class DownloadingItemPresenter extends Presenter {
 
 
     Context context;
-    private static final int CARD_WIDTH = 600, CARD_HEIGHT = 300;
+    private static final int CARD_WIDTH = 400, CARD_HEIGHT = 200;
     static HashMap<String, String> progressVars;
     static ArrayObjectAdapter downloadingRowAdapter;
 
@@ -81,7 +78,6 @@ public class DownloadingItemPresenter extends Presenter {
         TextView tvTitle = new TextView(parent.getContext());
         tvTitle.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         tvTitle.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        tvTitle.setTextSize(Util.convertDpToPixel(context, 9));
         tvTitle.setTextColor(context.getResources().getColor(android.R.color.white));
 
 

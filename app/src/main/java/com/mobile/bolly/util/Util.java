@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -20,7 +19,6 @@ import androidx.core.content.FileProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.mobile.bolly.R;
-import com.mobile.bolly.WatchActivity;
 
 import java.io.File;
 import java.io.IOException;

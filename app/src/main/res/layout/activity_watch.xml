@@ -45,10 +45,12 @@
 
             <TextView
                 android:id="@+id/tv_progress"
-                android:layout_marginTop="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Baking... 0%"/>
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:text="Baking... 0%\nPlease stay here"
+                android:textAlignment="center" />
 
 
         </LinearLayout>

@@ -1,7 +1,6 @@
 package com.mobile.bolly.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.mobile.bolly.R;
 import com.mobile.bolly.adapter.SuggestionAdapter;
@@ -119,7 +117,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         RetrofitSingleton.getBollyService().getSuggestions(query).enqueue(new Callback<List<Suggestion>>() {
             @Override
             public void onResponse(Call<List<Suggestion>> call, Response<List<Suggestion>> response) {
-                if(response.body() != null){
+                if(response.body() != null && getFragmentManager() != null){
                     HomeSearchFragment homeSearchFragment = (HomeSearchFragment) getFragmentManager().findFragmentByTag("SEARCH");
                     if(homeSearchFragment != null){
                         homeSearchFragment.setData(response.body());

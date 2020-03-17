@@ -1,16 +1,12 @@
 package com.mobile.bolly;
 
-import android.Manifest;
 import android.app.UiModeManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -25,15 +21,8 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.google.android.material.button.MaterialButton;
-import com.mobile.bolly.R;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.frostwire.jlibtorrent.TorrentInfo;
 import com.github.se_bastiaan.torrentstream.StreamStatus;
 import com.github.se_bastiaan.torrentstream.Torrent;
@@ -49,32 +38,20 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.button.MaterialButton;
 import com.mobile.bolly.models.Movie;
 import com.mobile.bolly.networking.RetrofitSingleton;
-import com.mobile.bolly.util.DownloadingForegroundService;
 
-import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Target;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.UnknownHostException;
 
-import okhttp3.Connection;
 import retrofit2.Call;
 import retrofit2.Response;
-import retrofit2.http.Url;
 
 import static android.view.View.GONE;
-import static com.mobile.bolly.util.Common.fullScreen;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_SEEK;
+import static com.mobile.bolly.util.Common.fullScreen;
 import static com.mobile.bolly.util.Util.showToast;
 import static com.mobile.bolly.util.Util.startMxPlayer;
 
@@ -89,7 +66,7 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
     SimpleExoPlayer player = null;
     private static int currentProgress = 0;
     ImageButton btnBack;
-    String id;
+    int id;
 
     LinearLayout llLoading;
     ViewSwitcher viewSwitcher;
@@ -155,8 +132,8 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
         Glide.with(WatchActivity.this).load(R.drawable.popcorn_comming).into(ivLoading);
 
 
-        String id = getIntent().getStringExtra("id");
-        if(id != null){
+        int id = getIntent().getIntExtra("id", 0);
+        if(id != 0){
             this.id = id;
             String ipAddress = "127.0.0.1";
             try {
@@ -170,7 +147,7 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
 
             TorrentOptions torrentOptions = new TorrentOptions.Builder()
                     .saveLocation(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS))
-                    .removeFilesAfterStop(false)
+                    .removeFilesAfterStop(true)
                     .autoDownload(true)
                     .build();
 
@@ -192,7 +169,8 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                WatchActivity.super.onBackPressed();
+                if(!WatchActivity.this.isDestroyed())
+                    WatchActivity.super.onBackPressed();
             }
         });
 
@@ -228,7 +206,8 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                WatchActivity.super.onBackPressed();
+                if(!WatchActivity.this.isDestroyed())
+                    WatchActivity.super.onBackPressed();
             }
         }, 5000);
 
@@ -244,7 +223,7 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
 
 
 
-    private void fetchTorrent(String id){
+    private void fetchTorrent(int id){
         Log.d(TORRENT, "fetching for id "+ id);
         RetrofitSingleton.getBollyService().getMovieDetails(id).enqueue(new retrofit2.Callback<Movie>() {
             @Override
@@ -347,7 +326,7 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
 
 
     private void releaseTorrentStream(){
-
+        torrentStreamServer.removeListener(this);
         if(torrentStreamServer.getCurrentTorrent() != null){
             try {
                 torrentStreamServer.getCurrentTorrent().getVideoStream().close();
@@ -416,7 +395,7 @@ public class WatchActivity extends AppCompatActivity implements TorrentServerLis
     public void onStreamProgress(Torrent torrent, StreamStatus status) {
         //Log.d("FILE SIZE", torrent.getVideoFile().getAbsoluteFile().length() + " bytes");
         if(status.bufferProgress <= 100 && currentProgress < status.bufferProgress && currentProgress != status.bufferProgress) {
-            tvProgress.setText("Baking... "+ status.bufferProgress + "%");
+            tvProgress.setText("Baking... "+ status.bufferProgress + "%\n Please stay here");
 
         }
     }

@@ -2,7 +2,6 @@ package com.mobile.bolly.tv;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.leanback.app.VerticalGridSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
@@ -13,29 +12,21 @@ import androidx.leanback.widget.RowPresenter;
 import androidx.leanback.widget.VerticalGridPresenter;
 
 import com.mobile.bolly.models.MovieDetails;
-import com.mobile.bolly.models.MovieDiscover;
-import com.mobile.bolly.models.MovieTopRated;
 import com.mobile.bolly.models.Result;
 import com.mobile.bolly.networking.BollyService;
 import com.mobile.bolly.networking.RetrofitSingleton;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.mobile.bolly.constants.Tmdb.APIKEY;
 
 public class MovieGridFragment extends VerticalGridSupportFragment {
 
-    public static final int categoryRecent = 1, categoryToprated = 2, categoryGenre = 3, categoryYear = 4;
+    public static final int CATEGORY_RECENT = 1, CATEGORY_TOPRATED = 2, CATEGORY_GENRE = 3, CATEGORY_YEAR = 4;
     int category = 0;
-    int page = 1;
-    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     ArrayObjectAdapter movieGridAdapter;
 
     @Override
@@ -72,7 +63,7 @@ public class MovieGridFragment extends VerticalGridSupportFragment {
 
         switch (category){
 
-            case categoryRecent:
+            case CATEGORY_RECENT:
                 setTitle("Recent Additions");
 
                 BollyService service = RetrofitSingleton.getBollyService();
@@ -110,109 +101,71 @@ public class MovieGridFragment extends VerticalGridSupportFragment {
                 });
                 break;
 
-            case categoryToprated:
+            case CATEGORY_TOPRATED:
                 setTitle("Top Rated");
-                RetrofitSingleton.getTmdbService().topRated(APIKEY, "hi", "IN", page)
-                        .enqueue(new Callback<MovieTopRated>() {
-                            @Override
-                            public void onResponse(Call<MovieTopRated> call, Response<MovieTopRated> response) {
-                                if(response.body().getResults() != null){
-                                    if(page == 1) movieGridAdapter.clear();
-                                    for(Result result: response.body().getResults()){
-                                        if(Integer.parseInt(result.getReleaseDate().split("-")[0] ) >= 2000)
-                                            movieGridAdapter.add(result);
-                                    }
+                RetrofitSingleton.getBollyService().getTopRated().enqueue(new Callback<List<Result>>() {
+                    @Override
+                    public void onResponse(Call<List<Result>> call, Response<List<Result>> response) {
+                        if(response.body() != null){
+                            movieGridAdapter.clear();
+                            for(Result result: response.body())
+                                movieGridAdapter.add(result);
+                        }
+                    }
 
-                                    Log.d("PageTotal", response.body().getTotalPages() + "");
-                                    Log.d("Page", response.body().getPage() + "");
+                    @Override
+                    public void onFailure(Call<List<Result>> call, Throwable t) {
 
-
-
-                                    if(response.body().getPage() < response.body().getTotalPages()){
-                                        page += 1;
-                                        fetchMoviesByCategory(category);
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<MovieTopRated> call, Throwable t) {
-
-                            }
-                        });
-                break;
-
-            case categoryGenre:
-                setTitle(getActivity().getIntent().getStringExtra("genre"));
-                int genre = getActivity().getIntent().getIntExtra("genre_id", 0);
-
-                RetrofitSingleton.getTmdbService().genre(APIKEY, "hi", "IN", page, true, genre + "", "release_date.desc", "IN", dateFormat.format(new Date()), "2001-01-01")
-                        .enqueue(new Callback<MovieDiscover>() {
-                            @Override
-                            public void onResponse(Call<MovieDiscover> call, Response<MovieDiscover> response) {
-                                if(response.body().getResults() != null){
-                                    if(page == 1) movieGridAdapter.clear();
-
-                                    for(Result movie: response.body().getResults()){
-                                        movieGridAdapter.add(movie);
-                                    }
-
-
-                                    Log.d("PageTotal", response.body().getTotalPages() + "");
-                                    Log.d("Page", response.body().getPage() + "");
-
-
-
-                                    if(response.body().getPage() < response.body().getTotalPages()){
-                                        page += 1;
-                                        fetchMoviesByCategory(category);
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<MovieDiscover> call, Throwable t) {
-
-                            }
-                        });
+                    }
+                });
 
                 break;
 
-            case categoryYear:
+            case CATEGORY_GENRE:
+                Intent intent = getActivity().getIntent();
+                int genre = 0;
+                if(intent != null) {
+                    setTitle(intent.getStringExtra("genre"));
+                    genre = intent.getIntExtra("genre_id", 0);
+                }
+
+                RetrofitSingleton.getBollyService().getForGenre(genre).enqueue(new Callback<List<Result>>() {
+                    @Override
+                    public void onResponse(Call<List<Result>> call, Response<List<Result>> response) {
+                        if(response.body() != null){
+                            movieGridAdapter.clear();
+                            for(Result result: response.body())
+                                movieGridAdapter.add(result);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Result>> call, Throwable t) {
+
+                    }
+                });
+
+                break;
+
+            case CATEGORY_YEAR:
                 String year = getActivity().getIntent().getStringExtra("year");
                 setTitle(year);
 
-                RetrofitSingleton.getTmdbService()
-                        .year(APIKEY, "hi", "IN", page, true, Integer.parseInt(year), "release_date.desc", "IN", dateFormat.format(new Date()))
-                        .enqueue(new Callback<MovieDiscover>() {
-                            @Override
-                            public void onResponse(Call<MovieDiscover> call, Response<MovieDiscover> response) {
-                                if(response.body().getResults() != null){
-                                    if(page == 1) movieGridAdapter.clear();
+                RetrofitSingleton.getBollyService().getForYear(Integer.parseInt(year)).enqueue(new Callback<List<Result>>() {
+                    @Override
+                    public void onResponse(Call<List<Result>> call, Response<List<Result>> response) {
+                        if(response.body() != null){
+                            movieGridAdapter.clear();
+                            for(Result result: response.body())
+                                movieGridAdapter.add(result);
+                        }
+                    }
 
-                                    for(Result movie: response.body().getResults()){
-                                        movieGridAdapter.add(movie);
-                                    }
+                    @Override
+                    public void onFailure(Call<List<Result>> call, Throwable t) {
 
-
-                                    Log.d("PageTotal", response.body().getTotalPages() + "");
-                                    Log.d("Page", response.body().getPage() + "");
-
-
-
-                                    if(response.body().getPage() < response.body().getTotalPages()){
-                                        page += 1;
-                                        fetchMoviesByCategory(category);
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<MovieDiscover> call, Throwable t) {
-
-                            }
-                        });
-
+                    }
+                });
 
                 break;
 

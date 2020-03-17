@@ -2,14 +2,12 @@ package com.mobile.bolly.tv;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Environment;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.FileProvider;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.Presenter;
 
@@ -18,11 +16,8 @@ import com.mobile.bolly.adapter.MovieSavedAdapter;
 import com.mobile.bolly.util.Util;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
-import static com.mobile.bolly.tv.YearItemPresenter.YEAR_CARD_WIDTH;
 import static com.mobile.bolly.util.Util.startMxPlayer;
 
 public class DownloadedItemPresenter extends Presenter {
@@ -47,6 +42,7 @@ public class DownloadedItemPresenter extends Presenter {
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
         TextView view = new TextView(parent.getContext());
+        view.setPadding(72, 0, 72, 0);
         view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, CARD_HEIGHT));
         view.setMaxWidth(CARD_WIDTH);
         view.setFocusable(true);
@@ -59,7 +55,12 @@ public class DownloadedItemPresenter extends Presenter {
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Object item) {
-        ((TextView)viewHolder.view).setText((String)item);
+        String title = (String) item;
+        int lastIndexOfDot = title.lastIndexOf(".");
+        if(lastIndexOfDot > 0)
+            ((TextView)viewHolder.view).setText(title.substring(0, lastIndexOfDot));
+        else
+            ((TextView)viewHolder.view).setText(title);
     }
 
     @Override

@@ -2,19 +2,15 @@ package com.mobile.bolly.tv;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.FileProvider;
 import androidx.leanback.app.BrowseSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.HeaderItem;
@@ -32,13 +28,12 @@ import com.mobile.bolly.constants.Tmdb;
 import com.mobile.bolly.models.Result;
 import com.mobile.bolly.util.DownloadingForegroundService;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
+import static com.mobile.bolly.util.Common.checkUpdateTv;
+import static com.mobile.bolly.util.DownloadingForegroundService.ACTION_COMPLETE_DOWNLOAD;
 import static com.mobile.bolly.util.DownloadingForegroundService.ACTION_STOP_DOWNLOAD;
-import static com.mobile.bolly.util.Util.startMxPlayer;
 
 public class MainFragmentTv extends BrowseSupportFragment {
 
@@ -75,6 +70,14 @@ public class MainFragmentTv extends BrowseSupportFragment {
                 }
 
 
+            }else if(intent.getAction().equals(ACTION_COMPLETE_DOWNLOAD)){
+
+                if(downloadedItemPresenter != null) {
+                    downloadedItemPresenter.updateTitle(null);
+                    downloadingItemPresenter.updateProgress(null, null, null);
+                }
+
+
             }
 
         }
@@ -96,6 +99,8 @@ public class MainFragmentTv extends BrowseSupportFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+
+        checkUpdateTv(getActivity());
         setupUIElements();
         loadRows();
         setupEventListeners();

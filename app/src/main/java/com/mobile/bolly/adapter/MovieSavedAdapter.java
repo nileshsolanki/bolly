@@ -1,12 +1,9 @@
 package com.mobile.bolly.adapter;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +16,7 @@ import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mobile.bolly.R;
-
+import com.mobile.bolly.util.Util;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -27,7 +24,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import com.mobile.bolly.util.Util;
 import static com.mobile.bolly.util.Util.startMxPlayer;
 
 
@@ -61,6 +57,8 @@ public class MovieSavedAdapter extends RecyclerView.Adapter<MovieSavedAdapter.Mo
                 return true;
             }
         });
+
+        if(files == null) files = new String[0];
         List<String> savedMovies = Arrays.asList(files);
         return savedMovies;
 

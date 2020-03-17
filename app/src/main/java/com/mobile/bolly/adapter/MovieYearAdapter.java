@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.mobile.bolly.R;
 import com.google.android.material.button.MaterialButton;
 import com.mobile.bolly.MovieGridActivity;
+import com.mobile.bolly.R;
 
 public class MovieYearAdapter extends RecyclerView.Adapter<MovieYearAdapter.YearViewHolder> {
 
@@ -38,7 +38,7 @@ public class MovieYearAdapter extends RecyclerView.Adapter<MovieYearAdapter.Year
 
     @Override
     public int getItemCount() {
-        return 21;
+        return 10;
     }
 
 

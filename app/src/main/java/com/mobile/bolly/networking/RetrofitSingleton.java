@@ -60,7 +60,7 @@ public class RetrofitSingleton {
     }
 
 
-    public static void postReport(String id, int reported, int played){
+    public static void postReport(int id, int reported, int played){
         HashMap<String, Integer> body = new HashMap<>();
         body.put("reported", reported);
         body.put("played", played);

@@ -35,13 +35,14 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
     }
 
     private void showDialog(){
-        if(dialog != null /*&& !dialog.isVisible()*/) {
-            //removeDialog(); //to remove any existing dialogs and then create new
-            if(dialog.isAdded()){
-                manager.beginTransaction().show(dialog);
-                return;
+
+        if(manager != null){
+            Fragment prev = manager.findFragmentByTag("dialog");
+            if(prev != null && prev instanceof NoconnectionDialog){
+                manager.beginTransaction().show((NoconnectionDialog)prev);
+            }else{
+                manager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).add(android.R.id.content, dialog, "dialog").addToBackStack("stack").commitAllowingStateLoss();
             }
-            manager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).add(android.R.id.content, dialog, "dialog").addToBackStack("stack").commit();
         }
     }
 
@@ -50,8 +51,7 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
             Fragment prev = manager.findFragmentByTag("dialog");
             if(prev != null){
                 Log.d("FRAGMENT", "previous fragment found.. dismissing");
-                manager.beginTransaction().remove(((NoconnectionDialog)prev)).commit();
-                //((NoconnectionDialog)prev).dismiss();
+                dialog.dismiss();
             }
         }
     }
@@ -73,7 +73,7 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
 
         @Override protected Boolean doInBackground(Void... voids) { try {
             Socket sock = new Socket();
-            sock.connect(new InetSocketAddress("8.8.8.8", 53), 1500);
+            sock.connect(new InetSocketAddress("8.8.8.8", 53), 5000);
             sock.close();
             return true;
         } catch (IOException e) { return false; } }

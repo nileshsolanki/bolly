@@ -2,13 +2,11 @@ package com.mobile.bolly.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mobile.bolly.models.Result;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SharedPrefHelper {

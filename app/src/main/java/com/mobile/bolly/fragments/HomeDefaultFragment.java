@@ -19,8 +19,7 @@ import com.mobile.bolly.adapter.MovieGenreAdapter;
 import com.mobile.bolly.adapter.MovieYearAdapter;
 import com.mobile.bolly.models.Movie;
 import com.mobile.bolly.models.MovieDetails;
-import com.mobile.bolly.models.MovieExternalIds;
-import com.mobile.bolly.models.MovieTopRated;
+
 import com.mobile.bolly.models.Result;
 import com.mobile.bolly.networking.BollyService;
 import com.mobile.bolly.networking.RetrofitSingleton;
@@ -34,7 +33,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.mobile.bolly.constants.Tmdb.APIKEY;
 
 public class HomeDefaultFragment extends Fragment implements View.OnClickListener {
 
@@ -106,55 +104,20 @@ public class HomeDefaultFragment extends Fragment implements View.OnClickListene
     }
 
     private void fetchTopRated(SharedPrefHelper sph) {
-        TmdbService service = RetrofitSingleton.getTmdbService();
-        service.topRated(APIKEY, "hi", "IN", 1).enqueue(new Callback<MovieTopRated>() {
+
+        RetrofitSingleton.getBollyService().getTopRated().enqueue(new Callback<List<Result>>() {
             @Override
-            public void onResponse(Call<MovieTopRated> call, Response<MovieTopRated> response) {
-
-                for(Result result : response.body().getResults()){
-                    if(Integer.parseInt(result.getReleaseDate().split("-")[0])>= 2000) {
-                        RetrofitSingleton.getTmdbService().externalIds(result.getId(), APIKEY).enqueue(new Callback<MovieExternalIds>() {
-                            @Override
-                            public void onResponse(Call<MovieExternalIds> call, Response<MovieExternalIds> response) {
-                                if(response.body() != null){
-
-                                    RetrofitSingleton.getBollyService().getMovieDetails(response.body().getImdbId()).enqueue(new Callback<Movie>() {
-                                        @Override
-                                        public void onResponse(Call<Movie> call, Response<Movie> response) {
-                                            if(response.body() != null){
-                                                ratedMovies.add(result);
-                                                movieTopratedAdapter.notifyDataSetChanged();
-                                                sph.putSearchResults(SharedPrefHelper.TYPE_TOPRATED, ratedMovies);
-                                                sph.putFetchTimeStamp(System.currentTimeMillis());
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<Movie> call, Throwable t) {
-
-                                        }
-                                    });
-
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<MovieExternalIds> call, Throwable t) {
-
-                            }
-                        });
-
-
-                    }
-
+            public void onResponse(Call<List<Result>> call, Response<List<Result>> response) {
+                if(response.body() != null){
+                    ratedMovies.addAll(response.body());
+                    movieTopratedAdapter.notifyDataSetChanged();
+                    sph.putSearchResults(SharedPrefHelper.TYPE_TOPRATED, ratedMovies);
+                    sph.putFetchTimeStamp(System.currentTimeMillis());
                 }
-
-
-
             }
 
             @Override
-            public void onFailure(Call<MovieTopRated> call, Throwable t) {
+            public void onFailure(Call<List<Result>> call, Throwable t) {
 
             }
         });

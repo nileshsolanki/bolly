@@ -15,19 +15,19 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import com.mobile.bolly.constants.TSSConfig;
 import com.mobile.bolly.models.MovieDetails;
 import com.mobile.bolly.models.Result;
 import com.mobile.bolly.networking.RetrofitSingleton;
 import com.mobile.bolly.util.ConnectivityChangeReceiver;
 import com.mobile.bolly.util.DownloadingForegroundService;
+import com.mobile.bolly.util.Util;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -48,6 +48,7 @@ public class MovieDetailActivity extends AppCompatActivity{
     MovieDetails details;
     ImageButton btnBack;
     String imdb_id = null;
+    int tmdbId;
     ConnectivityChangeReceiver connectivityReceiver;
     final String [] months = new String[] { "", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
@@ -97,24 +98,25 @@ public class MovieDetailActivity extends AppCompatActivity{
 
         Intent intent = getIntent();
         Result result = (Result) intent.getSerializableExtra("result");
-        int tmdbId = intent.getIntExtra("tmdb_id", 0);
+        tmdbId = intent.getIntExtra("tmdb_id", 0);
         if(result != null){
             populateResultData(result);
             fetchDetails(result.getId(), result);
+            tmdbId = result.getId();
         }else if(tmdbId != 0){
             fetchDetails(tmdbId, null);
         }
-
 
         fabBookmark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 Intent downloader = new Intent(MovieDetailActivity.this, DownloadingForegroundService.class);
-                downloader.putExtra("id", imdb_id);
+                downloader.putExtra("id", tmdbId);
                 ContextCompat.startForegroundService(MovieDetailActivity.this, downloader);
             }
         });
+
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,7 +190,9 @@ public class MovieDetailActivity extends AppCompatActivity{
 
                 if(result == null){
                     Result tempResult = new Result();
-                    tempResult.setPosterPath(details.getPosterPath().toString());
+
+                    if(details.getPosterPath() != null)
+                        tempResult.setPosterPath(details.getPosterPath().toString());
                     tempResult.setOriginalLanguage(details.getOriginalLanguage());
                     tempResult.setOverview(details.getOverview());
                     tempResult.setReleaseDate(details.getReleaseDate());
@@ -197,8 +201,7 @@ public class MovieDetailActivity extends AppCompatActivity{
                     populateResultData(tempResult);
                 }
 
-                imdb_id = response.body().getImdbId();
-                btnWatchNow.setOnClickListener(onWatchClick(response.body().getImdbId()));
+                btnWatchNow.setOnClickListener(onWatchClick(response.body().getId()));
             }
 
             @Override
@@ -210,10 +213,15 @@ public class MovieDetailActivity extends AppCompatActivity{
     }
 
 
-    private View.OnClickListener onWatchClick(String id){
+    private View.OnClickListener onWatchClick(int id){
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                if(TSSConfig.isDownloading()){
+                    Util.showToast(getApplicationContext(), "Other download in process...");
+                    return ;
+                }
                 Intent watchIntent = new Intent(MovieDetailActivity.this, WatchActivity.class);
                 watchIntent.putExtra("id", id);
                 startActivity(watchIntent);

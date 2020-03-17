@@ -17,10 +17,7 @@ import com.mobile.bolly.MovieDetailActivity;
 import com.mobile.bolly.R;
 import com.mobile.bolly.models.Suggestion;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.SuggestionViewHolder> implements Filterable {

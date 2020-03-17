@@ -13,15 +13,12 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.mobile.bolly.R;
 import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
 import com.mobile.bolly.MovieDetailActivity;
-import com.mobile.bolly.models.MovieDetails;
+import com.mobile.bolly.R;
 import com.mobile.bolly.models.Result;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.mobile.bolly.constants.Tmdb.POSTER_DOMAIN_185;

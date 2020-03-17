@@ -1,8 +1,8 @@
 package com.mobile.bolly.tv;
 
-import androidx.fragment.app.FragmentActivity;
-
 import android.os.Bundle;
+
+import androidx.fragment.app.FragmentActivity;
 
 import com.mobile.bolly.R;
 

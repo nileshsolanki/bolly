@@ -50,31 +50,13 @@ public class InfoFragment extends Fragment implements View.OnClickListener {
         switch (view.getId()){
 
             case R.id.tv_share:
-                RetrofitSingleton.getUpdateService().checkUpdates().enqueue(new Callback<UpdateLog>() {
-                    @Override
-                    public void onResponse(Call<UpdateLog> call, Response<UpdateLog> response) {
-                        if(response.body().getUrl() != null){
-
-                            try {
-                                Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                shareIntent.setType("text/plain");
-                                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Share bolly");
-                                String shareMessage= "\nHey I am enjoying BOLLY! You can watch bollywood movies for FREE!!!\nYou should try it too\nYou can find it here\n\n";
-                                shareMessage = shareMessage + response.body().getUrl()  + "\n\n";
-                                shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
-                                startActivity(Intent.createChooser(shareIntent, "choose one"));
-                            } catch(Exception e) {
-                                //e.toString();
-                            }
-
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<UpdateLog> call, Throwable t) {
-
-                    }
-                });
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Share bolly");
+                String shareMessage= "\nHey I am enjoying BOLLY! You can watch bollywood movies for FREE!!!\nYou should try it too\nYou can find it here\n\n";
+                shareMessage = shareMessage + "https://bolly.page.link/home"  + "\n\n";
+                shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
+                startActivity(Intent.createChooser(shareIntent, "choose one"));
                 break;
 
             case R.id.tv_opensource_licenses:

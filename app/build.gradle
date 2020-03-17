@@ -50,6 +50,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta01'
     implementation 'com.google.firebase:firebase-perf:19.0.5'
     implementation 'com.google.firebase:firebase-messaging:20.1.0'
+    implementation 'com.google.firebase:firebase-dynamic-links:19.1.0'
 
     implementation "androidx.leanback:leanback:1.0.0"
 

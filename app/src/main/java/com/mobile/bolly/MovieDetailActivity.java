@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,9 +19,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.ShortDynamicLink;
 import com.mobile.bolly.constants.TSSConfig;
 import com.mobile.bolly.models.MovieDetails;
 import com.mobile.bolly.models.Result;
@@ -33,6 +40,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 import static com.mobile.bolly.constants.Tmdb.APIKEY;
+import static com.mobile.bolly.constants.Tmdb.BOLLY_LOGO;
 import static com.mobile.bolly.constants.Tmdb.POSTER_DOMAIN_500;
 import static com.mobile.bolly.util.Common.fullScreen;
 
@@ -46,8 +54,8 @@ public class MovieDetailActivity extends AppCompatActivity{
     MaterialButton btnWatchNow;
     private String RESPONSE = "response";
     MovieDetails details;
-    ImageButton btnBack;
-    String imdb_id = null;
+    ImageButton btnBack, btnShare;
+    String title = "";
     int tmdbId;
     ConnectivityChangeReceiver connectivityReceiver;
     final String [] months = new String[] { "", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
@@ -83,6 +91,7 @@ public class MovieDetailActivity extends AppCompatActivity{
 
 
         btnBack = findViewById(R.id.imgbtn_back);
+        btnShare = findViewById(R.id.imgbtn_share);
         ivPoster = findViewById(R.id.iv_poster);
         tvTitle = findViewById(R.id.tv_title);
         tvRuntime = findViewById(R.id.tv_runtime);
@@ -125,6 +134,13 @@ public class MovieDetailActivity extends AppCompatActivity{
             }
         });
 
+        btnShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createDynamicLink(tmdbId, title);
+            }
+        });
+
 
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -158,7 +174,7 @@ public class MovieDetailActivity extends AppCompatActivity{
     }
 
     private void populateResultData(Result result) {
-
+        title = result.getTitle();
         tvTitle.setText(result.getTitle());
         tvRating.setText(result.getVoteAverage() + "");
         String dateObjs [] = result.getReleaseDate().split("-");
@@ -227,6 +243,64 @@ public class MovieDetailActivity extends AppCompatActivity{
                 startActivity(watchIntent);
             }
         };
+    }
+
+
+
+
+    private void createDynamicLink(int id, String title){
+
+            btnShare.setVisibility(View.INVISIBLE);
+
+            FirebaseDynamicLinks
+            .getInstance()
+            .createDynamicLink()
+            .setLink(Uri.parse("https://bolly.htmlsave.com?id=" + id))
+            .setDomainUriPrefix("https://bolly.page.link")
+            .setAndroidParameters(new DynamicLink.AndroidParameters.Builder("com.mobile.bolly")
+                    .setFallbackUrl(Uri.parse("https://bolly.htmlsave.com?id=" + id))
+                    .build())
+            .setIosParameters(new DynamicLink.IosParameters.Builder("com.mobile.bolly.ios")
+                    .build())
+            .setSocialMetaTagParameters(new DynamicLink.SocialMetaTagParameters.Builder()
+                    .setImageUrl(Uri.parse(BOLLY_LOGO))
+                    .setTitle("Bolly | " + title)
+                    .setDescription("Watch " + title + " on bolly for Free!!! Stay Tuned :)")
+                    .build())
+            .buildShortDynamicLink(ShortDynamicLink.Suffix.SHORT)
+            .addOnCompleteListener(new OnCompleteListener<ShortDynamicLink>() {
+                @Override
+                public void onComplete(@NonNull Task<ShortDynamicLink> task) {
+                    if(task.isSuccessful()){
+
+                        String shortLink = task.getResult().getShortLink().toString();
+                        shareMovieLink(shortLink, title);
+
+                    }
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+
+    }
+
+
+
+    private void shareMovieLink(String link, String title){
+
+        btnShare.setVisibility(View.VISIBLE);
+
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Share Movie");
+        String shareMessage= "\nWatch  *" + title + "* \nAnd many other titles on bolly now\n";
+        shareMessage = shareMessage + link  + "\n\n";
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
+        startActivity(Intent.createChooser(shareIntent, "choose one"));
     }
 
 }

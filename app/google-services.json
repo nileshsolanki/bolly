@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "913446903195-4hape4son4nijgra9b3tvfdbas6u0n7j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mobile.bolly",
+            "certificate_hash": "41c2441713bb601f40673669d311fbb4106027b7"
+          }
+        },
+        {
+          "client_id": "913446903195-h9sm8ojv4rclj7gmcdeho9gvmjqurkp8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mobile.bolly",
+            "certificate_hash": "67d252a727caa2d06f8fd3ee9efe17b05ca6e158"
+          }
+        },
+        {
           "client_id": "913446903195-dlrklog6m4aui77v59k9gt6v8nkj8e0t.apps.googleusercontent.com",
           "client_type": 3
         }

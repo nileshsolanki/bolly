@@ -12,6 +12,8 @@ public class Tmdb {
     public static final String TMDB_BASE_URL = "https://api.themoviedb.org/";
     public static final String UPDATE_SERVICE_BASE_URL = "https://api.npoint.io/";
 
+    public static final String BOLLY_LOGO = "https://i.imgur.com/yelT13Y.png";
+
 
 
 

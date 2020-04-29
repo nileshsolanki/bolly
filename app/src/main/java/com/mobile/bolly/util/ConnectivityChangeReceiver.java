@@ -20,6 +20,7 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
 
     FragmentManager manager;
     NoconnectionDialog dialog;
+    private static long lastConnectionChange = 0;
 
 
     public ConnectivityChangeReceiver(FragmentManager supportFragmentManager) {
@@ -30,8 +31,15 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        //so that dialog is not continuously added and removed...
 
-        isConnected(context.getApplicationContext());
+        if(System.currentTimeMillis() - lastConnectionChange <= 2000)
+            return;
+        else
+            isConnected(context.getApplicationContext());
+
+        lastConnectionChange = System.currentTimeMillis();
+
     }
 
     private void showDialog(){

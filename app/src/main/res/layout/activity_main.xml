@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true"
     android:background="#fff"
-    tools:context=".MainActivity">
+    tools:context=".phone.home.MainActivity">
 
     <FrameLayout
         android:elevation="9dp"

@@ -9,6 +9,4 @@ public interface UpdateService {
 
     @GET("ff80cc1b967f6d29185d")
     Call<UpdateLog> checkUpdates();
-
-    //"https://api.npoint.io/ff80cc1b967f6d29185d"
 }

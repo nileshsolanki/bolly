@@ -19,5 +19,7 @@ public class FbMessagingService extends FirebaseMessagingService {
         sendToServer(s);
     }
 
-    private void sendToServer(String token) { }
+    private void sendToServer(String token) {
+        //todo implement this method
+    }
 }

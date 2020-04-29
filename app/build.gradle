@@ -12,7 +12,7 @@ android {
         applicationId "com.mobile.bolly"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 10
+        versionCode 11
         versionName "0.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

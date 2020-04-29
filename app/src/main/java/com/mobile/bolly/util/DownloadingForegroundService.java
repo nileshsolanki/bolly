@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -26,7 +27,7 @@ import com.github.se_bastiaan.torrentstream.TorrentOptions;
 import com.github.se_bastiaan.torrentstreamserver.TorrentServerListener;
 import com.github.se_bastiaan.torrentstreamserver.TorrentStreamNotInitializedException;
 import com.github.se_bastiaan.torrentstreamserver.TorrentStreamServer;
-import com.mobile.bolly.MainActivity;
+import com.mobile.bolly.phone.home.MainActivity;
 import com.mobile.bolly.R;
 import com.mobile.bolly.constants.TSSConfig;
 import com.mobile.bolly.models.Movie;
@@ -34,7 +35,6 @@ import com.mobile.bolly.networking.RetrofitSingleton;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,7 +49,7 @@ import java.util.TimerTask;
 import retrofit2.Call;
 import retrofit2.Response;
 
-import static com.mobile.bolly.WatchActivity.getIpAddress;
+import static com.mobile.bolly.phone.watch.WatchActivity.getIpAddress;
 
 public class DownloadingForegroundService extends Service implements TorrentServerListener {
 
@@ -73,6 +73,7 @@ public class DownloadingForegroundService extends Service implements TorrentServ
     private TorrentStreamServer torrentStreamServer;
 
     Timer timer;
+    PowerManager.WakeLock wakeLock;
 
 
     @Override
@@ -85,6 +86,7 @@ public class DownloadingForegroundService extends Service implements TorrentServ
         messenger = new Messenger();
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_STOP_DOWNLOAD);
+        filter.addAction(ACTION_COMPLETE_DOWNLOAD);
         registerReceiver(messenger, filter);
     }
 
@@ -101,6 +103,7 @@ public class DownloadingForegroundService extends Service implements TorrentServ
             Util.showToast(this, "Starting download process...");
             isRunning = !isRunning;
             notification = getNotification("<Please wait>", 0);
+            acquireWakeLock(); //get wakelock before staring service
             startForeground(1, notification);
             TSSConfig.setDownloading();
             int id = intent.getIntExtra("id", 0);
@@ -256,6 +259,8 @@ public class DownloadingForegroundService extends Service implements TorrentServ
 
         if(timer != null)
             timer.cancel();
+
+        releaseWakeLock(); //release wake lock after service
     }
 
     private void createNotificationChannel() {
@@ -367,7 +372,6 @@ public class DownloadingForegroundService extends Service implements TorrentServ
         @Override
         public void onReceive(Context context, Intent intent) {
             Util.showToast(context, "action " + intent.getAction());
-            Log.d("ACTION", "stop clicked");
             switch (intent.getAction()){
 
                 case ACTION_STOP_DOWNLOAD:
@@ -399,6 +403,7 @@ public class DownloadingForegroundService extends Service implements TorrentServ
                     LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(ACTION_COMPLETE_DOWNLOAD));
                     TSSConfig.resetDownloading();
                     releaseTorrentStream();
+                    Util.showToast(context, "Download Complete: You might need to restart your app");
                     stopForeground(true);
                     stopSelf();
                     break;
@@ -473,11 +478,8 @@ public class DownloadingForegroundService extends Service implements TorrentServ
                 input.close();
 
 
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
                 sendBroadcast(stop);
             }
 
@@ -503,4 +505,18 @@ public class DownloadingForegroundService extends Service implements TorrentServ
     //==============================================================================
     //==============================================================================
 
+
+    //wake lock
+    private void acquireWakeLock(){
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BOLLY:WakeLock");
+        wakeLock.acquire(3*60*60*1000);
+    }
+
+
+    private void releaseWakeLock(){
+        if(wakeLock != null)
+            if(wakeLock.isHeld())
+                wakeLock.release();
+    }
 }

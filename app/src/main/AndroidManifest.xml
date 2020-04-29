@@ -36,7 +36,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="<yourdomain>.com"
+                    android:host="replacewithyourdomain.com"
                     android:scheme="https" />
             </intent-filter>
         </activity>

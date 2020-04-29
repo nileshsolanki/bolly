@@ -5,6 +5,7 @@ import com.android.bolly.R;
 public class Tmdb {
 
     public static final String APIKEY = "<obtain api from tmdb.org>";
+    public static final String HOMEPAGE = "yourhompagedomain.com";
     public static final String POSTER_DOMAIN_185 = "https://image.tmdb.org/t/p/w185";
     public static final String POSTER_DOMAIN_500 = "https://image.tmdb.org/t/p/w500";
     public static final String BACKDROP_URL_1280 = "https://image.tmdb.org/t/p/w1280";

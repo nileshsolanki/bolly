@@ -15,6 +15,8 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.android.bolly.BuildConfig;
 import com.android.bolly.R;
 
+import static com.android.bolly.constants.Tmdb.HOMEPAGE;
+
 public class InfoFragment extends Fragment implements View.OnClickListener {
 
 
@@ -47,8 +49,8 @@ public class InfoFragment extends Fragment implements View.OnClickListener {
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.setType("text/plain");
                 shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Share bolly");
-                String shareMessage= "\nHey I am enjoying BOLLY! You can watch bollywood movies for FREE!!!\nYou should try it too\nYou can find it here\n\n";
-                shareMessage = shareMessage + "https://bolly.page.link/home"  + "\n\n";
+                String shareMessage= "\nHey checkout this cool project ";
+                shareMessage = shareMessage + HOMEPAGE  + "\n\n";
                 shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
                 startActivity(Intent.createChooser(shareIntent, "choose one"));
                 break;

@@ -7,7 +7,7 @@ These are a few screenshots from the app
 |
 |:-------------------------:|:-------------------------:|:-------------------------:|
 
-|![alt text](https://github.com/nileshsolanki/bolly/blob/master/screenhsots/ss3.jpeg)|![alt text](https://github.com/nileshsolanki/bolly/blob/master/screenhsots/ss2.jpeg) |![alt text](https://github.com/nileshsolanki/bolly/blob/master/screenhsots/ss1.jpeg)|
+|![alt text](https://github.com/nileshsolanki/bolly/blob/master/screenhsots/ss3.jpeg =250x)|![alt text](https://github.com/nileshsolanki/bolly/blob/master/screenhsots/ss2.jpeg =250x) |![alt text](https://github.com/nileshsolanki/bolly/blob/master/screenhsots/ss1.jpeg =250x)|
 
 ![alt text](https://github.com/nileshsolanki/bolly/blob/master/screenhsots/bollytv.png)
 

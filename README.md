@@ -5,7 +5,7 @@ This project is a torrent streamer i.e given a magnet link it can stream content
 These are a few screenshots from the app
 
 
-<img width="250" src="https://github.com/nileshsolanki/bolly/blob/master/screenhsots/ss3.jpeg"><img width="250" src="https://github.com/nileshsolanki/bolly/blob/master/screenhsots/ss2.jpeg"><img width="250" src="https://github.com/nileshsolanki/bolly/blob/master/screenhsots/ss1.jpeg">
+<img width="280" src="https://github.com/nileshsolanki/bolly/blob/master/screenhsots/ss3.jpeg"><img width="280" src="https://github.com/nileshsolanki/bolly/blob/master/screenhsots/ss2.jpeg"><img width="280" src="https://github.com/nileshsolanki/bolly/blob/master/screenhsots/ss1.jpeg">
 
 
 ![alt text](https://github.com/nileshsolanki/bolly/blob/master/screenhsots/bollytv.png)

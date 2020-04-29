@@ -2,7 +2,7 @@
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" android:id="@+id/main_browse_fragment"
-    android:name="com.mobile.bolly.television.home.MainFragmentTv"
+    android:name="com.android.bolly.television.home.MainFragmentTv"
     android:layout_width="match_parent"
     android:layout_height="match_parent" tools:context=".phone.home.MainActivity" tools:deviceIds="tv"
     tools:ignore="MergeRootFrame" />

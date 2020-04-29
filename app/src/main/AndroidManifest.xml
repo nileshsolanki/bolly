@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.mobile.bolly">
+    package="com.android.bolly">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -28,7 +28,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="HardcodedDebugMode">
-        <activity android:name=".phone.splash.SplashActivity">
+        <activity android:name="com.android.bolly.phone.splash.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -36,19 +36,19 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="bolly.htmlsave.com"
+                    android:host="<yourdomain>.com"
                     android:scheme="https" />
             </intent-filter>
         </activity>
-        <activity android:name=".television.update.UpdateActivityTv" />
+        <activity android:name="com.android.bolly.television.update.UpdateActivityTv" />
         <activity
-            android:name=".television.grid.MovieGridActivityTv"
+            android:name="com.android.bolly.television.grid.MovieGridActivityTv"
             android:theme="@style/Theme.Leanback.VerticalGrid" />
         <activity
-            android:name=".television.detail.DetailsActivity"
+            android:name="com.android.bolly.television.detail.DetailsActivity"
             android:theme="@style/Theme.Leanback.Details" />
         <activity
-            android:name=".television.home.MainActivityTv"
+            android:name="com.android.bolly.television.home.MainActivityTv"
             android:label="@string/app_name"
             android:theme="@style/Theme.Leanback.Browse">
             <intent-filter>
@@ -58,16 +58,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".phone.grid.MovieGridActivity"
+            android:name="com.android.bolly.phone.grid.MovieGridActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
-            android:name=".phone.watch.WatchActivity"
+            android:name="com.android.bolly.phone.watch.WatchActivity"
             android:configChanges="orientation|screenSize|layoutDirection" />
         <activity
-            android:name=".phone.detail.MovieDetailActivity"
+            android:name="com.android.bolly.phone.detail.MovieDetailActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
-            android:name=".phone.home.MainActivity"
+            android:name="com.android.bolly.phone.home.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -77,14 +77,14 @@
         </activity>
 
         <service
-            android:name=".util.FbMessagingService"
+            android:name="com.android.bolly.util.FbMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name=".util.DownloadingForegroundService"
+            android:name="com.android.bolly.util.DownloadingForegroundService"
             android:enabled="true" />
 
         <meta-data

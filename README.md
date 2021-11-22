@@ -1,4 +1,3 @@
-Note: I made this project solely for eductational purposes.
 
 This project is a torrent streamer i.e given a magnet link it can stream content from it. It is built upon [TorrentStreamServer](https://github.com/TorrentStream/TorrentStreamServer-Android). It can run on android smartphones and TVs
 
